@@ -87,5 +87,4 @@ describe('Automatic Retries', function () {
     ])
     expect(tracker.timings[1] - tracker.timings[0]).to.be.closeTo(1000, 10)
   })
-
 })
