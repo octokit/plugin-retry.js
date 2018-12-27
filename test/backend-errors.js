@@ -23,6 +23,6 @@ describe('Trigger Retries', function () {
       'START GET /route',
       'END GET /route'
     ])
-    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(1000, 12)
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 12)
   })
 })
