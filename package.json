@@ -1,5 +1,5 @@
 {
-  "name": "@octokit/plugin-retry.js",
+  "name": "@octokit/plugin-retry",
   "version": "0.0.1",
   "description": "Automatic retry plugin for octokit",
   "main": "lib/index.js",

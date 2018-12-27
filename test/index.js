@@ -25,7 +25,7 @@ describe('Automatic Retries', function () {
       'START GET /route',
       'END GET /route'
     ])
-    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 10)
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 12)
   })
 
   it('Should retry twice and fail', async function () {
@@ -56,8 +56,8 @@ describe('Automatic Retries', function () {
       'START GET /route',
       'START GET /route'
     ])
-    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 10)
-    expect(octokit.__requestTimings[2] - octokit.__requestTimings[1]).to.be.closeTo(0, 10)
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 12)
+    expect(octokit.__requestTimings[2] - octokit.__requestTimings[1]).to.be.closeTo(0, 12)
   })
 
   it('Should retry after 1000ms', async function () {
@@ -84,6 +84,6 @@ describe('Automatic Retries', function () {
       'START GET /route',
       'END GET /route'
     ])
-    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(1000, 10)
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(1000, 12)
   })
 })
