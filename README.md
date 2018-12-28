@@ -1,7 +1,7 @@
 # plugin-retry.js
 
 [![npm](https://img.shields.io/npm/v/@octokit/plugin-retry.svg)](https://www.npmjs.com/package/@octokit/plugin-retry)
-[![Build Status](https://travis-ci.com/octokit/plugin-retry.js.svg?branch=beta)](https://travis-ci.com/octokit/plugin-retry.js)
+[![Build Status](https://travis-ci.com/octokit/plugin-retry.js.svg)](https://travis-ci.com/octokit/plugin-retry.js)
 [![Coverage Status](https://img.shields.io/coveralls/github/octokit/plugin-retry.js.svg)](https://coveralls.io/github/octokit/plugin-retry.js)
 [![Greenkeeper](https://badges.greenkeeper.io/octokit/plugin-retry.js.svg)](https://greenkeeper.io/)
 
