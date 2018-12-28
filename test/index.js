@@ -78,4 +78,53 @@ describe('Automatic Retries', function () {
     // 50ms * 2 === 100ms
     expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(100, 12)
   })
+
+  it('Should allow end users to see the number of retries after a failure', async function () {
+    const octokit = new Octokit()
+    octokit.retry._options({ retryAfterBaseValue: 25 })
+
+    try {
+      await octokit.request('GET /route', {
+        request: {
+          responses: [
+            { status: 500, headers: {}, data: { message: 'Did not retry, one' } },
+            { status: 500, headers: {}, data: { message: 'Did not retry, two' } },
+            { status: 500, headers: {}, data: { message: 'Did not retry, three' } },
+            { status: 500, headers: {}, data: { message: 'Did not retry, four' } }
+          ]
+        }
+      })
+      throw new Error('Should not reach this point')
+    } catch (error) {
+      expect(error.request.request.retryCount).to.equal(3)
+    }
+
+    expect(octokit.__requestTimings[3] - octokit.__requestTimings[2]).to.be.closeTo(225, 12)
+
+  })
+
+  it('Should allow end users to request retries', async function () {
+    const octokit = new Octokit()
+    octokit.retry._options({ retryAfterBaseValue: 25 })
+
+    const res = await octokit.request('GET /route', {
+      request: {
+        responses: [
+          { status: 400, headers: {}, data: { message: 'Did not retry' } },
+          { status: 202, headers: {}, data: { message: 'Yay!'} }
+        ],
+        retries: 1
+      }
+    })
+
+    expect(res.status).to.equal(202)
+    expect(res.data).to.include({ message: 'Yay!' })
+    expect(octokit.__requestLog).to.deep.equal([
+      'START GET /route',
+      'START GET /route',
+      'END GET /route'
+    ])
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 12)
+
+  })
 })
