@@ -1,16 +1,17 @@
 const expect = require('chai').expect
 const Octokit = require('./octokit')
 
-const noop = x => x
-
 describe('Trigger Retries', function () {
-  it('Should trigger a retry on HTTP 500 errors', async function () {
-    const octokit = new Octokit.mapper(noop)()
+  it('Should trigger exponential retries on HTTP 500 errors', async function () {
+    const octokit = new Octokit()
+    octokit.retry._options({ retryAfterBaseValue: 50 })
 
     const res = await octokit.request('GET /route', {
       request: {
         responses: [
-          { status: 500, headers: {}, data: { message: 'Did not retry' } },
+          { status: 500, headers: {}, data: { message: 'Did not retry, one' } },
+          { status: 500, headers: {}, data: { message: 'Did not retry, two' } },
+          { status: 500, headers: {}, data: { message: 'Did not retry, three' } },
           { status: 200, headers: {}, data: { message: 'Success!'} },
         ]
       }
@@ -21,8 +22,12 @@ describe('Trigger Retries', function () {
     expect(octokit.__requestLog).to.deep.equal([
       'START GET /route',
       'START GET /route',
+      'START GET /route',
+      'START GET /route',
       'END GET /route'
     ])
-    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 12)
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(50, 12)
+    expect(octokit.__requestTimings[2] - octokit.__requestTimings[1]).to.be.closeTo(200, 12)
+    expect(octokit.__requestTimings[3] - octokit.__requestTimings[2]).to.be.closeTo(450, 12)
   })
 })
