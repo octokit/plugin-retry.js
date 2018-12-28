@@ -12,7 +12,7 @@ describe('Trigger Retries', function () {
           { status: 500, headers: {}, data: { message: 'Did not retry, one' } },
           { status: 500, headers: {}, data: { message: 'Did not retry, two' } },
           { status: 500, headers: {}, data: { message: 'Did not retry, three' } },
-          { status: 200, headers: {}, data: { message: 'Success!'} },
+          { status: 200, headers: {}, data: { message: 'Success!' } }
         ]
       }
     })

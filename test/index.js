@@ -9,7 +9,7 @@ describe('Automatic Retries', function () {
       request: {
         responses: [
           { status: 403, headers: {}, data: { message: 'Did not retry' } },
-          { status: 200, headers: {}, data: { message: 'Success!'} },
+          { status: 200, headers: {}, data: { message: 'Success!' } }
         ],
         retries: 1
       }
@@ -29,7 +29,7 @@ describe('Automatic Retries', function () {
     const octokit = new Octokit()
 
     try {
-      const res = await octokit.request('GET /route', {
+      await octokit.request('GET /route', {
         request: {
           responses: [
             { status: 403, headers: {}, data: { message: 'ONE' } },
@@ -61,7 +61,7 @@ describe('Automatic Retries', function () {
       request: {
         responses: [
           { status: 403, headers: {}, data: {} },
-          { status: 202, headers: {}, data: { message: 'Yay!'} },
+          { status: 202, headers: {}, data: { message: 'Yay!' } }
         ],
         retries: 1,
         retryAfter: 2
