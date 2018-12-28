@@ -25,10 +25,10 @@ octokit.request('/').catch(error => {
 })
 ```
 
-You can ask for retries for any request by passing `{ request: { retries }}`
+You can ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`
 
 ```js
-octokit.request('/', { request: { retries: 1 } }).catch(error => {
+octokit.request('/', { request: { retries: 1, retryAfter: 1 } }).catch(error => {
   if (error.request.request.retryCount) {
     console.log(`request failed after ${error.request.request.retryCount} retries`)
   }

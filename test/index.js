@@ -100,7 +100,6 @@ describe('Automatic Retries', function () {
     }
 
     expect(octokit.__requestTimings[3] - octokit.__requestTimings[2]).to.be.closeTo(225, 12)
-
   })
 
   it('Should allow end users to request retries', async function () {
@@ -111,9 +110,10 @@ describe('Automatic Retries', function () {
       request: {
         responses: [
           { status: 400, headers: {}, data: { message: 'Did not retry' } },
-          { status: 202, headers: {}, data: { message: 'Yay!'} }
+          { status: 202, headers: {}, data: { message: 'Yay!' } }
         ],
-        retries: 1
+        retries: 1,
+        retryAfter: 1
       }
     })
 
@@ -124,7 +124,6 @@ describe('Automatic Retries', function () {
       'START GET /route',
       'END GET /route'
     ])
-    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(0, 12)
-
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(25, 12)
   })
 })
