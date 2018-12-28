@@ -1,15 +1,19 @@
 {
   "name": "@octokit/plugin-retry",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
   "description": "Automatic retry plugin for octokit",
   "main": "lib/index.js",
   "scripts": {
-    "pretest": "standard lib/",
+    "pretest": "standard",
     "test": "mocha test/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/octokit/plugin-retry.js.git"
+    "url": "https://github.com/octokit/plugin-retry.js.git"
   },
   "author": "Simon Grondin (http://github.com/SGrondin)",
   "license": "MIT",
