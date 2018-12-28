@@ -26,8 +26,8 @@ describe('Trigger Retries', function () {
       'START GET /route',
       'END GET /route'
     ])
-    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(50, 12)
-    expect(octokit.__requestTimings[2] - octokit.__requestTimings[1]).to.be.closeTo(200, 12)
-    expect(octokit.__requestTimings[3] - octokit.__requestTimings[2]).to.be.closeTo(450, 12)
+    expect(octokit.__requestTimings[1] - octokit.__requestTimings[0]).to.be.closeTo(50, 15)
+    expect(octokit.__requestTimings[2] - octokit.__requestTimings[1]).to.be.closeTo(200, 15)
+    expect(octokit.__requestTimings[3] - octokit.__requestTimings[2]).to.be.closeTo(450, 15)
   })
 })
