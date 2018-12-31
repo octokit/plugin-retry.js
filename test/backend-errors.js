@@ -30,57 +30,62 @@ describe('Trigger Retries', function () {
     expect(octokit.__requestTimings[3] - octokit.__requestTimings[2]).to.be.closeTo(450, 20)
   })
 
-  it('Should not retry 400/401/403 errors', async function () {
+  it('Should not retry 3xx/400/401/403 errors', async function () {
     const octokit = new Octokit({ retry: { retryAfterBaseValue: 50 } })
     let caught = 0
+    const testStatuses = [ 304, 400, 401, 403, 404 ]
 
-    try {
-      await octokit.request('GET /route', {
-        request: {
-          responses: [
-            { status: 400, headers: {}, data: { message: 'Error 400' } },
-            { status: 500, headers: {}, data: { message: 'Error 500' } }
-          ]
-        }
-      })
-    } catch (error) {
-      expect(error.message).to.equal('Error 400')
-      caught++
+    for (const status of testStatuses) {
+      try {
+        await octokit.request('GET /route', {
+          request: {
+            responses: [
+              { status, headers: {}, data: { message: `Error ${status}` } },
+              { status: 500, headers: {}, data: { message: 'Error 500' } }
+            ]
+          }
+        })
+      } catch (error) {
+        expect(error.message).to.equal(`Error ${status}`)
+        caught++
+      }
     }
 
-    try {
-      await octokit.request('GET /route', {
-        request: {
-          responses: [
-            { status: 401, headers: {}, data: { message: 'Error 401' } },
-            { status: 500, headers: {}, data: { message: 'Error 500' } }
-          ]
+    expect(caught).to.equal(testStatuses.length)
+    expect(octokit.__requestLog).to.deep.equal(testStatuses.map(x => 'START GET /route'))
+  })
+
+  it('Should allow to override the doNotRetry list', async function () {
+    const octokit = new Octokit({
+      retry: {
+        doNotRetry: [ 400 ],
+        retries: 1,
+        retryAfterBaseValue: 50
+      }
+    })
+    let caught = 0
+    const testStatuses = [ 304, 400, 401, 403, 404 ]
+
+    for (const status of testStatuses) {
+      try {
+        await octokit.request('GET /route', {
+          request: {
+            responses: [
+              { status, headers: {}, data: { message: `Error ${status}` } },
+              { status: 500, headers: {}, data: { message: 'Error 500' } }
+            ]
+          }
+        })
+      } catch (error) {
+        if (status === 400 || status < 400) {
+          expect(error.message).to.equal(`Error ${status}`)
+        } else {
+          expect(error.message).to.equal(`Error 500`)
         }
-      })
-    } catch (error) {
-      expect(error.message).to.equal('Error 401')
-      caught++
+        caught++
+      }
     }
 
-    try {
-      await octokit.request('GET /route', {
-        request: {
-          responses: [
-            { status: 403, headers: {}, data: { message: 'Error 403' } },
-            { status: 500, headers: {}, data: { message: 'Error 500' } }
-          ]
-        }
-      })
-    } catch (error) {
-      expect(error.message).to.equal('Error 403')
-      caught++
-    }
-
-    expect(caught).to.equal(3)
-    expect(octokit.__requestLog).to.deep.equal([
-      'START GET /route',
-      'START GET /route',
-      'START GET /route'
-    ])
+    expect(caught).to.equal(testStatuses.length)
   })
 })

@@ -14,7 +14,7 @@ module.exports = Octokit
       await new Promise(resolve => setTimeout(resolve, 0))
 
       const res = options.request.responses.shift()
-      if (res.status >= 400) {
+      if (res.status >= 300) {
         const message = res.data.message != null ? res.data.message : `Test failed request (${res.status})`
         const error = new HttpError(message, res.status, res.headers, options)
         throw error
