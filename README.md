@@ -5,7 +5,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/github/octokit/plugin-retry.js.svg)](https://coveralls.io/github/octokit/plugin-retry.js)
 [![Greenkeeper](https://badges.greenkeeper.io/octokit/plugin-retry.js.svg)](https://greenkeeper.io/)
 
-Implements request retries for server error responses.
+Implements request retries for server 4xx/5xx responses except `400`, `401`, `403` and `404`.
 
 ## Usage
 
@@ -25,7 +25,17 @@ octokit.request('/').catch(error => {
 })
 ```
 
-You can ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`
+To override the default `doNotRetry` list:
+
+```js
+const octokit = new Octokit({
+  retry: {
+    doNotRetry: [ /* List of HTTP 4xx/5xx status codes */ ]
+  }
+})
+```
+
+You can manually ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`
 
 ```js
 octokit.request('/', { request: { retries: 1, retryAfter: 1 } }).catch(error => {
