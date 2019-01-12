@@ -2,6 +2,30 @@ const expect = require('chai').expect
 const Octokit = require('./octokit')
 
 describe('Automatic Retries', function () {
+  it('Should be possible to disable the plugin', async function () {
+    const octokit = new Octokit({ retry: { enabled: false } })
+
+    try {
+      await octokit.request('GET /route', {
+        request: {
+          responses: [
+            { status: 403, headers: {}, data: { message: 'Did not retry' } },
+            { status: 200, headers: {}, data: { message: 'Success!' } }
+          ],
+          retries: 1
+        }
+      })
+      throw new Error('Should not reach this point')
+    } catch (error) {
+      expect(error.status).to.equal(403)
+      expect(error.message).to.equal('Did not retry')
+    }
+
+    expect(octokit.__requestLog).to.deep.equal([
+      'START GET /route'
+    ])
+  })
+
   it('Should retry once and pass', async function () {
     const octokit = new Octokit()
 
