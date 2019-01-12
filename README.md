@@ -47,6 +47,8 @@ octokit.request('/', { request: { retries: 1, retryAfter: 1 } }).catch(error => 
 })
 ```
 
+Pass `{ retry: { enabled: false } }` to disable this plugin.
+
 ## LICENSE
 
 [MIT](LICENSE)
