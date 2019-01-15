@@ -1,6 +1,6 @@
 const Octokit = require('@octokit/rest')
 const HttpError = require('@octokit/request/lib/http-error')
-const retryPlugin = require('..')
+const retryPlugin = require('../..')
 
 module.exports = Octokit
   .plugin((octokit) => {
