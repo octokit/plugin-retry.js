@@ -10,7 +10,7 @@ Implements request retries for server 4xx/5xx responses except `400`, `401`, `40
 ## Usage
 
 ```js
-const Octokit = require('@ocotkit/rest')
+const Octokit = require('@octokit/rest')
   .plugin(require('@octokit/plugin-retry'))
 
 const octokit = new Octokit()
