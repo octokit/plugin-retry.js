@@ -35,6 +35,14 @@ const octokit = new Octokit({
 })
 ```
 
+To override the number of retries:
+
+```js
+const octokit = new Octokit({
+  request: { retries: 1 }
+})
+```
+
 You can manually ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`
 
 ```js
