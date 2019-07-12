@@ -33,7 +33,7 @@ describe('Trigger Retries', function () {
   it('Should not retry 3xx/400/401/403/422 errors', async function () {
     const octokit = new Octokit({ retry: { retryAfterBaseValue: 50 } })
     let caught = 0
-    const testStatuses = [ 304, 400, 401, 403, 404, 422 ]
+    const testStatuses = [304, 400, 401, 403, 404, 422]
 
     for (const status of testStatuses) {
       try {
@@ -58,13 +58,13 @@ describe('Trigger Retries', function () {
   it('Should allow to override the doNotRetry list', async function () {
     const octokit = new Octokit({
       retry: {
-        doNotRetry: [ 400 ],
+        doNotRetry: [400],
         retries: 1,
         retryAfterBaseValue: 50
       }
     })
     let caught = 0
-    const testStatuses = [ 304, 400, 401, 403, 404 ]
+    const testStatuses = [304, 400, 401, 403, 404]
 
     for (const status of testStatuses) {
       try {
