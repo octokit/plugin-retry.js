@@ -44,7 +44,7 @@
     "mocha": "^6.0.0",
     "nyc": "^14.0.0",
     "semantic-release": "^15.13.2",
-    "standard": "^13.0.1"
+    "standard": "^14.0.2"
   },
   "dependencies": {
     "bottleneck": "^2.15.3"
