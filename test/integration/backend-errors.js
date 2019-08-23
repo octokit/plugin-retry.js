@@ -80,7 +80,7 @@ describe('Trigger Retries', function () {
         if (status === 400 || status < 400) {
           expect(error.message).to.equal(`Error ${status}`)
         } else {
-          expect(error.message).to.equal(`Error 500`)
+          expect(error.message).to.equal('Error 500')
         }
         caught++
       }
