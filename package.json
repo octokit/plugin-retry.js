@@ -11,8 +11,7 @@
     "coverage": "nyc report --reporter=html && open coverage/index.html",
     "coverage:upload": "nyc report --reporter=text-lcov | coveralls",
     "pretest": "standard",
-    "test": "nyc mocha test/integration/",
-    "test:memory": "node test/memory-leakage-test.js"
+    "test": "nyc mocha test/integration/"
   },
   "repository": {
     "type": "git",
@@ -40,7 +39,6 @@
     "@octokit/rest": "^16.3.0",
     "chai": "^4.2.0",
     "coveralls": "^3.0.2",
-    "leakage": "^0.4.0",
     "mocha": "^6.0.0",
     "nyc": "^14.0.0",
     "semantic-release": "^15.13.2",
