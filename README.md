@@ -40,7 +40,7 @@ const { retry } = require("@octokit/plugin-retry");
 </table>
 
 ```js
-const MyOctokit = Octokit.plugin(paginateRest);
+const MyOctokit = Octokit.plugin(retry);
 const octokit = new MyOctokit({ auth: "secret123" });
 
 // retries request up to 3 times in case of a 500 response
