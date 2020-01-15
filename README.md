@@ -59,6 +59,7 @@ To override the default `doNotRetry` list:
 
 ```js
 const octokit = new MyOctokit({
+  auth: "secret123",
   retry: {
     doNotRetry: [
       /* List of HTTP 4xx/5xx status codes */
@@ -71,6 +72,7 @@ To override the number of retries:
 
 ```js
 const octokit = new MyOctokit({
+  auth: "secret123",
   request: { retries: 1 }
 });
 ```
