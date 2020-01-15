@@ -1,5 +1,3 @@
-import { Octokit } from "@octokit/core";
-
 import { retry } from "../src";
 
 describe("Smoke test", () => {
