@@ -1,62 +1,102 @@
 # plugin-retry.js
 
-[![npm](https://img.shields.io/npm/v/@octokit/plugin-retry.svg)](https://www.npmjs.com/package/@octokit/plugin-retry)
-[![Build Status](https://travis-ci.com/octokit/plugin-retry.js.svg)](https://travis-ci.com/octokit/plugin-retry.js)
-[![Coverage Status](https://img.shields.io/coveralls/github/octokit/plugin-retry.js.svg)](https://coveralls.io/github/octokit/plugin-retry.js)
-[![Greenkeeper](https://badges.greenkeeper.io/octokit/plugin-retry.js.svg)](https://greenkeeper.io/)
+> Retries requests for server 4xx/5xx responses except `400`, `401`, `403` and `404`.
 
-Implements request retries for server 4xx/5xx responses except `400`, `401`, `403` and `404`.
+[![@latest](https://img.shields.io/npm/v/@octokit/plugin-retry.svg)](https://www.npmjs.com/package/@octokit/plugin-retry)
+[![Build Status](https://github.com/octokit/plugin-retry.js/workflows/Test/badge.svg)](https://github.com/octokit/plugin-retry.js/actions?workflow=Test)
+[![Greenkeeper](https://badges.greenkeeper.io/octokit/plugin-retry.js.svg)](https://greenkeeper.io/)
 
 ## Usage
 
-```js
-const Octokit = require('@octokit/rest')
-  .plugin(require('@octokit/plugin-retry'))
+<table>
+<tbody valign=top align=left>
+<tr><th>
+Browsers
+</th><td width=100%>
 
-const octokit = new Octokit()
+Load `@octokit/plugin-retry` and [`@octokit/core`](https://github.com/octokit/core.js) (or core-compatible module) directly from [cdn.pika.dev](https://cdn.pika.dev)
+
+```html
+<script type="module">
+  import { Octokit } from "https://cdn.pika.dev/@octokit/core";
+  import { retry } from "https://cdn.pika.dev/@octokit/plugin-retry";
+</script>
+```
+
+</td></tr>
+<tr><th>
+Node
+</th><td>
+
+Install with `npm install @octokit/core @octokit/plugin-retry`. Optionally replace `@octokit/core` with a core-compatible module
+
+```js
+const { Octokit } = require("@octokit/core");
+const { retry } = require("@octokit/plugin-retry");
+```
+
+</td></tr>
+</tbody>
+</table>
+
+```js
+const MyOctokit = Octokit.plugin(paginateRest);
+const octokit = new MyOctokit({ auth: "secret123" });
 
 // retries request up to 3 times in case of a 500 response
-octokit.request('/').catch(error => {
+octokit.request("/").catch(error => {
   if (error.request.request.retryCount) {
-    console.log(`request failed after ${error.request.request.retryCount} retries`)
+    console.log(
+      `request failed after ${error.request.request.retryCount} retries`
+    );
   }
 
-  console.error(error)
-})
+  console.error(error);
+});
 ```
 
 To override the default `doNotRetry` list:
 
 ```js
-const octokit = new Octokit({
+const octokit = new MyOctokit({
   retry: {
-    doNotRetry: [ /* List of HTTP 4xx/5xx status codes */ ]
+    doNotRetry: [
+      /* List of HTTP 4xx/5xx status codes */
+    ]
   }
-})
+});
 ```
 
 To override the number of retries:
 
 ```js
-const octokit = new Octokit({
+const octokit = new MyOctokit({
   request: { retries: 1 }
-})
+});
 ```
 
 You can manually ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`
 
 ```js
-octokit.request('/', { request: { retries: 1, retryAfter: 1 } }).catch(error => {
-  if (error.request.request.retryCount) {
-    console.log(`request failed after ${error.request.request.retryCount} retries`)
-  }
+octokit
+  .request("/", { request: { retries: 1, retryAfter: 1 } })
+  .catch(error => {
+    if (error.request.request.retryCount) {
+      console.log(
+        `request failed after ${error.request.request.retryCount} retries`
+      );
+    }
 
-  console.error(error)
-})
+    console.error(error);
+  });
 ```
 
 Pass `{ retry: { enabled: false } }` to disable this plugin.
 
-## LICENSE
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## License
 
 [MIT](LICENSE)
