@@ -46,7 +46,7 @@ const MyOctokit = Octokit.plugin(retry);
 const octokit = new MyOctokit({ auth: "secret123" });
 
 // retries request up to 3 times in case of a 500 response
-octokit.request("/").catch(error => {
+octokit.request("/").catch((error) => {
   if (error.request.request.retryCount) {
     console.log(
       `request failed after ${error.request.request.retryCount} retries`
@@ -65,8 +65,8 @@ const octokit = new MyOctokit({
   retry: {
     doNotRetry: [
       /* List of HTTP 4xx/5xx status codes */
-    ]
-  }
+    ],
+  },
 });
 ```
 
@@ -75,7 +75,7 @@ To override the number of retries:
 ```js
 const octokit = new MyOctokit({
   auth: "secret123",
-  request: { retries: 1 }
+  request: { retries: 1 },
 });
 ```
 
@@ -84,7 +84,7 @@ You can manually ask for retries for any request by passing `{ request: { retrie
 ```js
 octokit
   .request("/", { request: { retries: 1, retryAfter: 1 } })
-  .catch(error => {
+  .catch((error) => {
     if (error.request.request.retryCount) {
       console.log(
         `request failed after ${error.request.request.retryCount} retries`

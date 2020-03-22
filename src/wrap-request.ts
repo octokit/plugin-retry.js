@@ -6,7 +6,7 @@ export async function wrapRequest(state, request, options) {
   const limiter = new Bottleneck();
 
   // @ts-ignore
-  limiter.on("failed", function(error, info) {
+  limiter.on("failed", function (error, info) {
     const maxRetries = ~~error.request.request.retries;
     const after = ~~error.request.request.retryAfter;
     options.request.retryCount = info.retryCount + 1;

@@ -1,7 +1,7 @@
 import { TestOctokit } from "./octokit";
 
-describe("Automatic Retries", function() {
-  it("Should be possible to disable the plugin", async function() {
+describe("Automatic Retries", function () {
+  it("Should be possible to disable the plugin", async function () {
     const octokit = new TestOctokit({ retry: { enabled: false } });
 
     try {
@@ -9,10 +9,10 @@ describe("Automatic Retries", function() {
         request: {
           responses: [
             { status: 403, headers: {}, data: { message: "Did not retry" } },
-            { status: 200, headers: {}, data: { message: "Success!" } }
+            { status: 200, headers: {}, data: { message: "Success!" } },
           ],
-          retries: 1
-        }
+          retries: 1,
+        },
       });
       throw new Error("Should not reach this point");
     } catch (error) {
@@ -23,17 +23,17 @@ describe("Automatic Retries", function() {
     expect(octokit.__requestLog).toStrictEqual(["START GET /route"]);
   });
 
-  it("Should retry once and pass", async function() {
+  it("Should retry once and pass", async function () {
     const octokit = new TestOctokit();
 
     const response = await octokit.request("GET /route", {
       request: {
         responses: [
           { status: 403, headers: {}, data: { message: "Did not retry" } },
-          { status: 200, headers: {}, data: { message: "Success!" } }
+          { status: 200, headers: {}, data: { message: "Success!" } },
         ],
-        retries: 1
-      }
+        retries: 1,
+      },
     });
 
     expect(response.status).toEqual(200);
@@ -41,7 +41,7 @@ describe("Automatic Retries", function() {
     expect(octokit.__requestLog).toStrictEqual([
       "START GET /route",
       "START GET /route",
-      "END GET /route"
+      "END GET /route",
     ]);
 
     expect(
@@ -49,7 +49,7 @@ describe("Automatic Retries", function() {
     ).toBeLessThan(20);
   });
 
-  it("Should retry twice and fail", async function() {
+  it("Should retry twice and fail", async function () {
     const octokit = new TestOctokit();
 
     try {
@@ -58,10 +58,10 @@ describe("Automatic Retries", function() {
           responses: [
             { status: 403, headers: {}, data: { message: "ONE" } },
             { status: 403, headers: {}, data: { message: "TWO" } },
-            { status: 401, headers: {}, data: { message: "THREE" } }
+            { status: 401, headers: {}, data: { message: "THREE" } },
           ],
-          retries: 2
-        }
+          retries: 2,
+        },
       });
       throw new Error("Should not reach this point");
     } catch (error) {
@@ -71,7 +71,7 @@ describe("Automatic Retries", function() {
     expect(octokit.__requestLog).toStrictEqual([
       "START GET /route",
       "START GET /route",
-      "START GET /route"
+      "START GET /route",
     ]);
     expect(
       octokit.__requestTimings[1] - octokit.__requestTimings[0]
@@ -81,18 +81,18 @@ describe("Automatic Retries", function() {
     ).toBeLessThan(20);
   });
 
-  it("Should retry after 2000ms", async function() {
+  it("Should retry after 2000ms", async function () {
     const octokit = new TestOctokit({ retry: { retryAfterBaseValue: 50 } });
 
     const response = await octokit.request("GET /route", {
       request: {
         responses: [
           { status: 403, headers: {}, data: {} },
-          { status: 202, headers: {}, data: { message: "Yay!" } }
+          { status: 202, headers: {}, data: { message: "Yay!" } },
         ],
         retries: 1,
-        retryAfter: 2
-      }
+        retryAfter: 2,
+      },
     });
 
     expect(response.status).toEqual(202);
@@ -100,7 +100,7 @@ describe("Automatic Retries", function() {
     expect(octokit.__requestLog).toStrictEqual([
       "START GET /route",
       "START GET /route",
-      "END GET /route"
+      "END GET /route",
     ]);
     // 50ms * 2 === 100ms
     const ms = octokit.__requestTimings[1] - octokit.__requestTimings[0];
@@ -108,7 +108,7 @@ describe("Automatic Retries", function() {
     expect(ms).toBeLessThan(120);
   });
 
-  it("Should allow end users to see the number of retries after a failure", async function() {
+  it("Should allow end users to see the number of retries after a failure", async function () {
     const octokit = new TestOctokit({ retry: { retryAfterBaseValue: 25 } });
 
     try {
@@ -118,10 +118,10 @@ describe("Automatic Retries", function() {
             { status: 403, headers: {}, data: { message: "Failed, one" } },
             { status: 403, headers: {}, data: { message: "Failed, two" } },
             { status: 403, headers: {}, data: { message: "Failed, three" } },
-            { status: 403, headers: {}, data: { message: "Failed, four" } }
+            { status: 403, headers: {}, data: { message: "Failed, four" } },
           ],
-          retries: 3
-        }
+          retries: 3,
+        },
       });
       throw new Error("Should not reach this point");
     } catch (error) {
@@ -135,18 +135,18 @@ describe("Automatic Retries", function() {
     ).toBeLessThan(20);
   });
 
-  it("Should allow end users to request retries", async function() {
+  it("Should allow end users to request retries", async function () {
     const octokit = new TestOctokit({ retry: { retryAfterBaseValue: 25 } });
 
     const response = await octokit.request("GET /route", {
       request: {
         responses: [
           { status: 403, headers: {}, data: { message: "Did not retry" } },
-          { status: 202, headers: {}, data: { message: "Yay!" } }
+          { status: 202, headers: {}, data: { message: "Yay!" } },
         ],
         retries: 1,
-        retryAfter: 1
-      }
+        retryAfter: 1,
+      },
     });
 
     expect(response.status).toEqual(202);
@@ -154,14 +154,14 @@ describe("Automatic Retries", function() {
     expect(octokit.__requestLog).toStrictEqual([
       "START GET /route",
       "START GET /route",
-      "END GET /route"
+      "END GET /route",
     ]);
 
     const ms = octokit.__requestTimings[1] - octokit.__requestTimings[0];
     expect(ms).toBeLessThan(45);
   });
 
-  it("Should trigger exponential retries on HTTP 500 errors", async function() {
+  it("Should trigger exponential retries on HTTP 500 errors", async function () {
     const octokit = new TestOctokit({ retry: { retryAfterBaseValue: 50 } });
 
     const res = await octokit.request("GET /route", {
@@ -172,11 +172,11 @@ describe("Automatic Retries", function() {
           {
             status: 500,
             headers: {},
-            data: { message: "Did not retry, three" }
+            data: { message: "Did not retry, three" },
           },
-          { status: 200, headers: {}, data: { message: "Success!" } }
-        ]
-      }
+          { status: 200, headers: {}, data: { message: "Success!" } },
+        ],
+      },
     });
 
     expect(res.status).toEqual(200);
@@ -186,7 +186,7 @@ describe("Automatic Retries", function() {
       "START GET /route",
       "START GET /route",
       "START GET /route",
-      "END GET /route"
+      "END GET /route",
     ]);
 
     const ms0 = octokit.__requestTimings[1] - octokit.__requestTimings[0];
@@ -202,7 +202,7 @@ describe("Automatic Retries", function() {
     expect(ms2).toBeGreaterThan(420);
   });
 
-  it("Should not retry 3xx/400/401/403/422 errors", async function() {
+  it("Should not retry 3xx/400/401/403/422 errors", async function () {
     const octokit = new TestOctokit({ retry: { retryAfterBaseValue: 50 } });
     let caught = 0;
     const testStatuses = [304, 400, 401, 403, 404, 422];
@@ -213,9 +213,9 @@ describe("Automatic Retries", function() {
           request: {
             responses: [
               { status, headers: {}, data: { message: `Error ${status}` } },
-              { status: 500, headers: {}, data: { message: "Error 500" } }
-            ]
-          }
+              { status: 500, headers: {}, data: { message: "Error 500" } },
+            ],
+          },
         });
       } catch (error) {
         expect(error.message).toEqual(`Error ${status}`);
@@ -225,17 +225,17 @@ describe("Automatic Retries", function() {
 
     expect(caught).toEqual(testStatuses.length);
     expect(octokit.__requestLog).toStrictEqual(
-      testStatuses.map(x => "START GET /route")
+      testStatuses.map((x) => "START GET /route")
     );
   });
 
-  it("Should allow to override the doNotRetry list", async function() {
+  it("Should allow to override the doNotRetry list", async function () {
     const octokit = new TestOctokit({
       retry: {
         doNotRetry: [400],
         retries: 1,
-        retryAfterBaseValue: 50
-      }
+        retryAfterBaseValue: 50,
+      },
     });
     let caught = 0;
     const testStatuses = [304, 400, 401, 403, 404];
@@ -246,9 +246,9 @@ describe("Automatic Retries", function() {
           request: {
             responses: [
               { status, headers: {}, data: { message: `Error ${status}` } },
-              { status: 500, headers: {}, data: { message: "Error 500" } }
-            ]
-          }
+              { status: 500, headers: {}, data: { message: "Error 500" } },
+            ],
+          },
         });
       } catch (error) {
         if (status === 400 || status < 400) {

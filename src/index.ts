@@ -15,7 +15,7 @@ export function retry(
       enabled: true,
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
-      retries: 3
+      retries: 3,
     },
     octokitOptions.retry
   );
@@ -28,11 +28,11 @@ export function retry(
     ) => {
       error.request.request = Object.assign({}, error.request.request, {
         retries: retries,
-        retryAfter: retryAfter
+        retryAfter: retryAfter,
       });
 
       return error;
-    }
+    },
   };
 
   if (!state.enabled) {
