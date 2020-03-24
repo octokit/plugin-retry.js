@@ -15,12 +15,10 @@ jobs:
         node_version: ["10", "12"]
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node_version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node_version }}
-      - name: Install
-        run: npm ci
-      - name: Test
-        run: npm test
+      - run: npm ci
+      - run: npm test
