@@ -4,7 +4,7 @@
 
 [![@latest](https://img.shields.io/npm/v/@octokit/plugin-retry.svg)](https://www.npmjs.com/package/@octokit/plugin-retry)
 [![Build Status](https://github.com/octokit/plugin-retry.js/workflows/Test/badge.svg)](https://github.com/octokit/plugin-retry.js/actions?workflow=Test)
-[![Greenkeeper](https://badges.greenkeeper.io/octokit/plugin-retry.js.svg)](https://greenkeeper.io/)
+
 
 ## Usage
 
