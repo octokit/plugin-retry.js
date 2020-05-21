@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/octokit/plugin-retry.js#readme",
   "dependencies": {
-    "@octokit/types": "^2.0.1",
+    "@octokit/types": "^4.0.1",
     "bottleneck": "^2.15.3"
   },
   "devDependencies": {
