@@ -7,7 +7,7 @@ export async function wrapRequest(
   request: (options: RequestOptions) => Promise<OctokitResponse<any>>,
   options: RequestOptions
 ) {
-  const limiter = new Bottleneck.Bottleneck();
+  const limiter = new Bottleneck();
 
   limiter.on("failed", function (error, info) {
     const maxRetries = ~~error.request.request.retries;

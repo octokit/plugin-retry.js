@@ -1223,5 +1223,5 @@ declare module "bottleneck/light" {
     }
   }
 
-  export default Bottleneck;
+  export default Bottleneck.Bottleneck;
 }
