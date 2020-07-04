@@ -7,7 +7,7 @@ import { RetryState } from './types'
 
 export async function wrapRequest(
   state: RetryState,
-  request: (a: RequestOptions) => Promise<OctokitResponse<any>>,
+  request: (options: RequestOptions) => Promise<OctokitResponse<any>>,
   options: RequestOptions
 ) {
   const limiter = new Bottleneck.Bottleneck();
