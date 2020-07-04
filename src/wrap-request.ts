@@ -1,9 +1,6 @@
-import {
-  RequestOptions,
-  OctokitResponse,
-} from "@octokit/types";
+import { RequestOptions, OctokitResponse } from "@octokit/types";
 import Bottleneck from "bottleneck/light";
-import { RetryState } from './types'
+import { RetryState } from "./types";
 
 export async function wrapRequest(
   state: RetryState,

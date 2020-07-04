@@ -1,7 +1,7 @@
 import type { Octokit } from "@octokit/core";
 import { RequestOptions } from "@octokit/types";
 import { RequestError } from "@octokit/request-error";
-import { RetryState } from './types'
+import { RetryState } from "./types";
 
 export async function errorRequest(
   octokit: Octokit,
