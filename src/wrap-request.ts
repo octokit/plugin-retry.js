@@ -1,14 +1,24 @@
-// @ts-ignore
+import {
+  RequestOptions,
+  OctokitResponse,
+} from "@octokit/types";
 import Bottleneck from "bottleneck/light";
+import { RetryState } from './types'
 
-// @ts-ignore
-export async function wrapRequest(state, request, options) {
-  const limiter = new Bottleneck();
+export async function wrapRequest(
+  state: RetryState,
+  request: (a: RequestOptions) => Promise<OctokitResponse<any>>,
+  options: RequestOptions
+) {
+  const limiter = new Bottleneck.Bottleneck();
 
-  // @ts-ignore
   limiter.on("failed", function (error, info) {
     const maxRetries = ~~error.request.request.retries;
     const after = ~~error.request.request.retryAfter;
+
+    if (!options.request) {
+      options.request = {};
+    }
     options.request.retryCount = info.retryCount + 1;
 
     if (maxRetries > info.retryCount) {
@@ -18,5 +28,8 @@ export async function wrapRequest(state, request, options) {
     }
   });
 
-  return limiter.schedule(request, options);
+  return limiter.schedule<OctokitResponse<any>, RequestOptions>(
+    request,
+    options
+  );
 }
