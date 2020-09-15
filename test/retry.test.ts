@@ -266,6 +266,48 @@ describe("Automatic Retries", function () {
 
     expect(caught).toEqual(testStatuses.length);
   });
+
+  it("Should allow to override per request", async function () {
+    const octokit = new TestOctokit();
+    await expect(async () => {
+      return octokit.request("GET /route", {
+        request: {
+          retries: 1,
+          responses: [
+            { status: 404, headers: {}, data: { message: "Response 1" } },
+            { status: 404, headers: {}, data: { message: "Response 2" } },
+            { status: 200, headers: {}, data: { message: "Success!" } },
+          ],
+        },
+      });
+    }).rejects.toThrowError("Response 2");
+
+    expect(octokit.__requestLog).toStrictEqual([
+      "START GET /route",
+      "START GET /route",
+    ]);
+  });
+
+  it("Should respect default doNotRetry option when overriding per request", async function () {
+    const octokit = new TestOctokit();
+    await octokit
+      .request("GET /route", {
+        request: {
+          retries: 1,
+          responses: [
+            { status: 401, headers: {}, data: { message: "Did not retry" } },
+            {
+              status: 500,
+              headers: {},
+              data: { message: "Should not have retried" },
+            },
+          ],
+        },
+      })
+      .catch((error) => {
+        expect(error.message).toEqual("Did not retry");
+      });
+  });
 });
 
 describe("errorRequest", function () {
