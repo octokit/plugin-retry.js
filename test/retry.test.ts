@@ -1,4 +1,8 @@
-import { TestOctokit } from "./octokit";
+import { TestOctokit, TestOctokitWithoutRetry } from "./octokit";
+import { errorRequest } from "../src/error-request";
+import { RequestError } from "@octokit/request-error";
+import { RequestMethod } from "@octokit/types";
+import { retry } from "../src";
 
 describe("Automatic Retries", function () {
   it("Should be possible to disable the plugin", async function () {
@@ -261,5 +265,88 @@ describe("Automatic Retries", function () {
     }
 
     expect(caught).toEqual(testStatuses.length);
+  });
+
+  it("Should use default retry options if no options are passed to the plugin", async function () {
+    const octokit = new TestOctokitWithoutRetry();
+
+    // In this test case we need to register the plugin manually,
+    // because using Octokit.plugin always passes an options object to retry().
+    retry(octokit);
+
+    try {
+      await octokit.request("GET /route", {
+        request: {
+          responses: [
+            { status: 500, headers: {}, data: { message: "Failed, one" } },
+            { status: 500, headers: {}, data: { message: "Failed, two" } },
+            { status: 500, headers: {}, data: { message: "Failed, three" } },
+            { status: 500, headers: {}, data: { message: "Failed, four" } },
+          ],
+        },
+      });
+      throw new Error("Should not reach this point");
+    } catch (error) {
+      expect(error.message).toEqual("Failed, four");
+      expect(error.request.request.retryCount).toEqual(3);
+    }
+  }, 15000);
+});
+
+describe("errorRequest", function () {
+  it("Should rethrow the error if there's no request property", async function () {
+    const octokit = new TestOctokit();
+    const state = {
+      enabled: true,
+      retryAfterBaseValue: 1000,
+      doNotRetry: [400, 401, 403, 404, 422],
+      retries: 3,
+    };
+    const errorOptions = {
+      request: {
+        method: "GET" as RequestMethod,
+        url: "/issues",
+        headers: {},
+        retries: 5,
+        request: {},
+      },
+    };
+    const error = new RequestError("Internal server error", 500, errorOptions) as any;
+    delete error.request;
+
+    try {
+      await errorRequest(octokit, state, error, errorOptions);
+      expect(1).not.toBe(1);
+    } catch (e) {
+      expect(e).toBe(error);
+    }
+  });
+
+  it("should override the state.retries property with the options.request.retries properties", async function () {
+    const octokit = new TestOctokit();
+    const state = {
+      enabled: true,
+      retryAfterBaseValue: 1000,
+      doNotRetry: [400, 401, 403, 404, 422],
+      retries: 3,
+    };
+    const errorOptions = {
+      request: {
+        method: "GET" as RequestMethod,
+        url: "/issues",
+        headers: {},
+        retries: 5,
+        request: {},
+      },
+    };
+
+    const error = new RequestError("Internal server error", 500, errorOptions);
+
+    try {
+      await errorRequest(octokit, state, error, errorOptions);
+      expect(1).not.toBe(1);
+    } catch (e) {
+      expect(e.request.retries).toBe(5);
+    }
   });
 });
