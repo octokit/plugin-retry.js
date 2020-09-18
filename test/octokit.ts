@@ -31,4 +31,5 @@ function testPlugin(octokit: Octokit) {
   });
 }
 
+export const TestOctokitWithoutRetry = Octokit.plugin(testPlugin);
 export const TestOctokit = Octokit.plugin(testPlugin, retry);

@@ -48,10 +48,10 @@
     "preset": "ts-jest",
     "coverageThreshold": {
       "global": {
-        "statements": 98,
-        "branches": 85,
+        "statements": 100,
+        "branches": 100,
         "functions": 100,
-        "lines": 98
+        "lines": 100
       }
     }
   },
