@@ -311,7 +311,11 @@ describe("errorRequest", function () {
         request: {},
       },
     };
-    const error = new RequestError("Internal server error", 500, errorOptions) as any;
+    const error = new RequestError(
+      "Internal server error",
+      500,
+      errorOptions
+    ) as any;
     delete error.request;
 
     try {
