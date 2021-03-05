@@ -12,16 +12,9 @@
     "pretest": "npm run -s lint",
     "test": "jest --coverage"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/octokit/plugin-retry.js.git"
-  },
+  "repository": "github:octokit/plugin-retry.js",
   "author": "Simon Grondin (http://github.com/SGrondin)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/octokit/plugin-retry.js/issues"
-  },
-  "homepage": "https://github.com/octokit/plugin-retry.js#readme",
   "dependencies": {
     "@octokit/types": "^6.0.3",
     "bottleneck": "^2.15.3"
