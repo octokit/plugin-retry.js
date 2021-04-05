@@ -6,10 +6,7 @@ import { wrapRequest } from "./wrap-request";
 
 export const VERSION = "0.0.0-development";
 
-export function retry(
-  octokit: Octokit,
-  octokitOptions: ConstructorParameters<typeof Octokit>[0] = {}
-) {
+export function retry(octokit: Octokit, octokitOptions: any) {
   const state = Object.assign(
     {
       enabled: true,
@@ -20,26 +17,26 @@ export function retry(
     octokitOptions.retry
   );
 
-  octokit.retry = {
-    retryRequest: (
-      error: RequestError,
-      retries: number,
-      retryAfter: number
-    ) => {
-      error.request.request = Object.assign({}, error.request.request, {
-        retries: retries,
-        retryAfter: retryAfter,
-      });
-
-      return error;
-    },
-  };
-
-  if (!state.enabled) {
-    return;
+  if (state.enabled) {
+    octokit.hook.error("request", errorRequest.bind(null, octokit, state));
+    octokit.hook.wrap("request", wrapRequest.bind(null, state));
   }
 
-  octokit.hook.error("request", errorRequest.bind(null, octokit, state));
-  octokit.hook.wrap("request", wrapRequest.bind(null, state));
+  return {
+    retry: {
+      retryRequest: (
+        error: RequestError,
+        retries: number,
+        retryAfter: number
+      ) => {
+        error.request.request = Object.assign({}, error.request.request, {
+          retries: retries,
+          retryAfter: retryAfter,
+        });
+
+        return error;
+      },
+    },
+  };
 }
 retry.VERSION = VERSION;

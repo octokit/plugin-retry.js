@@ -266,31 +266,6 @@ describe("Automatic Retries", function () {
 
     expect(caught).toEqual(testStatuses.length);
   });
-
-  it("Should use default retry options if no options are passed to the plugin", async function () {
-    const octokit = new TestOctokitWithoutRetry();
-
-    // In this test case we need to register the plugin manually,
-    // because using Octokit.plugin always passes an options object to retry().
-    retry(octokit);
-
-    try {
-      await octokit.request("GET /route", {
-        request: {
-          responses: [
-            { status: 500, headers: {}, data: { message: "Failed, one" } },
-            { status: 500, headers: {}, data: { message: "Failed, two" } },
-            { status: 500, headers: {}, data: { message: "Failed, three" } },
-            { status: 500, headers: {}, data: { message: "Failed, four" } },
-          ],
-        },
-      });
-      throw new Error("Should not reach this point");
-    } catch (error) {
-      expect(error.message).toEqual("Failed, four");
-      expect(error.request.request.retryCount).toEqual(3);
-    }
-  }, 15000);
 });
 
 describe("errorRequest", function () {
