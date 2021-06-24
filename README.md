@@ -38,8 +38,6 @@ const { retry } = require("@octokit/plugin-retry");
 </tbody>
 </table>
 
-**Note**: If you use it with `@octokit/rest` v16, install `@octokit/core` as a devDependency. This is only temporary and will no longer be necessary with `@octokit/rest` v17.
-
 ```js
 const MyOctokit = Octokit.plugin(retry);
 const octokit = new MyOctokit({ auth: "secret123" });
