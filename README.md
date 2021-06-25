@@ -76,7 +76,7 @@ const octokit = new MyOctokit({
 });
 ```
 
-You can manually ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`
+You can manually ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`. Note that the `doNotRetry` option from the constructor is ignored in this case, requests will be retried no matter their response code.
 
 ```js
 octokit
