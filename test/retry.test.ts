@@ -19,7 +19,7 @@ describe("Automatic Retries", function () {
         },
       });
       throw new Error("Should not reach this point");
-    } catch (error) {
+    } catch (error: any) {
       expect(error.status).toEqual(403);
       expect(error.message).toEqual("Did not retry");
     }
@@ -68,7 +68,7 @@ describe("Automatic Retries", function () {
         },
       });
       throw new Error("Should not reach this point");
-    } catch (error) {
+    } catch (error: any) {
       expect(error.status).toEqual(401);
       expect(error.message).toEqual("THREE");
     }
@@ -128,7 +128,7 @@ describe("Automatic Retries", function () {
         },
       });
       throw new Error("Should not reach this point");
-    } catch (error) {
+    } catch (error: any) {
       expect(error.message).toEqual("Failed, four");
       expect(error.request.request.retryCount).toEqual(4);
     }
@@ -221,7 +221,7 @@ describe("Automatic Retries", function () {
             ],
           },
         });
-      } catch (error) {
+      } catch (error: any) {
         expect(error.message).toEqual(`Error ${status}`);
         caught++;
       }
@@ -254,7 +254,7 @@ describe("Automatic Retries", function () {
             ],
           },
         });
-      } catch (error) {
+      } catch (error: any) {
         if (status === 400 || status < 400) {
           expect(error.message).toEqual(`Error ${status}`);
         } else {
@@ -296,7 +296,7 @@ describe("errorRequest", function () {
     try {
       await errorRequest(octokit, state, error, errorOptions);
       expect(1).not.toBe(1);
-    } catch (e) {
+    } catch (e: any) {
       expect(e).toBe(error);
     }
   });
@@ -324,7 +324,7 @@ describe("errorRequest", function () {
     try {
       await errorRequest(octokit, state, error, errorOptions);
       expect(1).not.toBe(1);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.request.retries).toBe(5);
     }
   });
