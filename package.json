@@ -19,6 +19,9 @@
     "@octokit/types": "^6.0.3",
     "bottleneck": "^2.15.3"
   },
+  "peerDependencies": {
+    "@octokit/core": ">=3"
+  },
   "devDependencies": {
     "@octokit/core": "^3.0.0",
     "@octokit/request-error": "^2.0.0",
