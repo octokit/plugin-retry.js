@@ -265,6 +265,63 @@ describe("Automatic Retries", function () {
 
     expect(caught).toEqual(testStatuses.length);
   });
+
+  it('Should retry "Something went wrong" GraphQL error', async function () {
+    const octokit = new TestOctokit();
+
+    const result = await octokit.graphql({
+      query: `query { 
+          viewer { 
+            login
+          }
+        }`,
+      request: {
+        responses: [
+          {
+            status: 200,
+            headers: {},
+            data: {
+              errors: [
+                {
+                  message:
+                    // the `0000:0000:0000000:0000000:00000000` part is variable, it's the request ID provided by GitHub
+                    "Something went wrong while executing your query. Please include `0000:0000:0000000:0000000:00000000` when reporting this issue.",
+                },
+              ],
+            },
+          },
+          {
+            status: 200,
+            headers: {},
+            data: {
+              data: {
+                viewer: {
+                  login: "gr2m",
+                },
+              },
+            },
+          },
+        ],
+        retries: 1,
+      },
+    });
+
+    expect(result).toStrictEqual({
+      viewer: {
+        login: "gr2m",
+      },
+    });
+    expect(octokit.__requestLog).toStrictEqual([
+      "START POST /graphql",
+      "END POST /graphql",
+      "START POST /graphql",
+      "END POST /graphql",
+    ]);
+
+    expect(
+      octokit.__requestTimings[1] - octokit.__requestTimings[0]
+    ).toBeLessThan(20);
+  });
 });
 
 describe("errorRequest", function () {
