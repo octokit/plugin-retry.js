@@ -322,6 +322,63 @@ describe("Automatic Retries", function () {
       octokit.__requestTimings[1] - octokit.__requestTimings[0]
     ).toBeLessThan(20);
   });
+
+  it('Should not retry non-"Something went wrong" GraphQL errors', async function () {
+    const octokit = new TestOctokit();
+
+    try {
+      await octokit.graphql({
+        query: `query { 
+          viewer { 
+            login
+          }
+        }`,
+        request: {
+          responses: [
+            {
+              status: 200,
+              headers: {},
+              data: {
+                errors: [
+                  {
+                    message:
+                      "Something that cannot be fixed with a request retry",
+                  },
+                ],
+              },
+            },
+            {
+              status: 200,
+              headers: {},
+              data: {
+                data: {
+                  viewer: {
+                    login: "gr2m",
+                  },
+                },
+              },
+            },
+          ],
+          retries: 1,
+        },
+      });
+      throw new Error("Should not reach this point");
+    } catch (error: any) {
+      expect(error.name).toEqual("GraphqlResponseError");
+      expect(error.message).toContain(
+        "Something that cannot be fixed with a request retry"
+      );
+    }
+
+    expect(octokit.__requestLog).toStrictEqual([
+      "START POST /graphql",
+      "END POST /graphql",
+    ]);
+
+    expect(
+      octokit.__requestTimings[1] - octokit.__requestTimings[0]
+    ).toBeLessThan(20);
+  });
 });
 
 describe("errorRequest", function () {
