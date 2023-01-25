@@ -29,7 +29,12 @@ export async function wrapRequest(state, request, options) {
 async function requestWithGraphqlErrorHandling(request, options) {
   const response = await request(request, options);
 
-  if (response.data.errors) {
+  if (
+    response.data.errors &&
+    /Something went wrong while executing your query/.test(
+      response.data.errors[0].message
+    )
+  ) {
     // simulate 500 request error for retry handling
     const error = new RequestError(response.data.errors[0].message, 500, {
       request: options,
