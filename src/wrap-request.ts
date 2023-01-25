@@ -1,5 +1,6 @@
 // @ts-ignore
 import Bottleneck from "bottleneck/light";
+import { RequestError } from "@octokit/request-error";
 
 // @ts-ignore
 export async function wrapRequest(state, request, options) {
@@ -18,5 +19,29 @@ export async function wrapRequest(state, request, options) {
     }
   });
 
-  return limiter.schedule(request, options);
+  return limiter.schedule(
+    requestWithGraphqlErrorHandling.bind(null, request),
+    options
+  );
+}
+
+// @ts-ignore
+async function requestWithGraphqlErrorHandling(request, options) {
+  const response = await request(request, options);
+
+  if (
+    response.data.errors &&
+    /Something went wrong while executing your query/.test(
+      response.data.errors[0].message
+    )
+  ) {
+    // simulate 500 request error for retry handling
+    const error = new RequestError(response.data.errors[0].message, 500, {
+      request: options,
+      response,
+    });
+    throw error;
+  }
+
+  return response;
 }
