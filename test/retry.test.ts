@@ -323,6 +323,25 @@ describe("Automatic Retries", function () {
     ).toBeLessThan(20);
   });
 
+  it("Should not throw for empty responses", async function () {
+    const octokit = new TestOctokit();
+
+    const response = await octokit.request("GET /test", {
+      request: {
+        responses: [
+          {
+            status: 200,
+            headers: {},
+            data: undefined,
+          },
+        ],
+        retries: 1,
+      },
+    });
+
+    expect(response.data).toBeUndefined();
+  });
+
   it('Should not retry non-"Something went wrong" GraphQL errors', async function () {
     const octokit = new TestOctokit();
 
