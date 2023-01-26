@@ -30,7 +30,6 @@ async function requestWithGraphqlErrorHandling(request, options) {
   const response = await request(request, options);
 
   if (
-    response.data &&
     response.data.errors &&
     /Something went wrong while executing your query/.test(
       response.data.errors[0].message
