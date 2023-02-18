@@ -426,7 +426,7 @@ describe("errorRequest", function () {
     delete error.request;
 
     try {
-      await errorRequest(octokit, state, error, errorOptions);
+      await errorRequest(state, octokit, error, errorOptions);
       expect(1).not.toBe(1);
     } catch (e: any) {
       expect(e).toBe(error);
@@ -454,7 +454,7 @@ describe("errorRequest", function () {
     const error = new RequestError("Internal server error", 500, errorOptions);
 
     try {
-      await errorRequest(octokit, state, error, errorOptions);
+      await errorRequest(state, octokit, error, errorOptions);
       expect(1).not.toBe(1);
     } catch (e: any) {
       expect(e.request.retries).toBe(5);
