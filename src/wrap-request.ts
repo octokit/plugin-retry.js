@@ -1,12 +1,11 @@
-// @ts-ignore
+// @ts-nocheck
 import Bottleneck from "bottleneck/light";
 import { RequestError } from "@octokit/request-error";
+import { errorRequest } from "./error-request";
 
-// @ts-ignore
-export async function wrapRequest(state, request, options) {
+export async function wrapRequest(state, octokit, request, options) {
   const limiter = new Bottleneck();
 
-  // @ts-ignore
   limiter.on("failed", function (error, info) {
     const maxRetries = ~~error.request.request.retries;
     const after = ~~error.request.request.retryAfter;
@@ -20,13 +19,17 @@ export async function wrapRequest(state, request, options) {
   });
 
   return limiter.schedule(
-    requestWithGraphqlErrorHandling.bind(null, request),
+    requestWithGraphqlErrorHandling.bind(null, state, octokit, request),
     options
   );
 }
 
-// @ts-ignore
-async function requestWithGraphqlErrorHandling(request, options) {
+async function requestWithGraphqlErrorHandling(
+  state,
+  octokit,
+  request,
+  options
+) {
   const response = await request(request, options);
 
   if (
@@ -41,7 +44,7 @@ async function requestWithGraphqlErrorHandling(request, options) {
       request: options,
       response,
     });
-    throw error;
+    return errorRequest(state, octokit, error, options);
   }
 
   return response;

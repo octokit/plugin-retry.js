@@ -18,8 +18,8 @@ export function retry(octokit: Octokit, octokitOptions: any) {
   );
 
   if (state.enabled) {
-    octokit.hook.error("request", errorRequest.bind(null, octokit, state));
-    octokit.hook.wrap("request", wrapRequest.bind(null, state));
+    octokit.hook.error("request", errorRequest.bind(null, state, octokit));
+    octokit.hook.wrap("request", wrapRequest.bind(null, state, octokit));
   }
 
   return {

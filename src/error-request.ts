@@ -1,6 +1,6 @@
 // @ts-ignore
 
-export async function errorRequest(octokit, state, error, options) {
+export async function errorRequest(state, octokit, error, options) {
   if (!error.request || !error.request.request) {
     // address https://github.com/octokit/plugin-retry.js/issues/8
     throw error;
