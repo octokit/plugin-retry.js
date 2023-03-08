@@ -3,6 +3,14 @@ import { errorRequest } from "../src/error-request";
 import { RequestError } from "@octokit/request-error";
 import { RequestMethod } from "@octokit/types";
 
+describe("Octokit", function () {
+  it("Should fail on creation if strategy is invalid", function () {
+    expect(() => {
+      new TestOctokit({ retry: { strategy: "invalid" } });
+    }).toThrow("Invalid retry strategy: invalid");
+  });
+});
+
 describe("Automatic Retries", function () {
   it("Should be possible to disable the plugin", async function () {
     const octokit = new TestOctokit({ retry: { enabled: false } });
@@ -164,7 +172,7 @@ describe("Automatic Retries", function () {
     expect(ms).toBeLessThan(45);
   });
 
-  it("Should trigger exponential retries on HTTP 500 errors", async function () {
+  it("Should trigger polynomial retries on HTTP 500 errors", async function () {
     const octokit = new TestOctokit({ retry: { retryAfterBaseValue: 50 } });
 
     const res = await octokit.request("GET /route", {
@@ -202,7 +210,7 @@ describe("Automatic Retries", function () {
 
     const ms2 = octokit.__requestTimings[3] - octokit.__requestTimings[2];
     expect(ms2).toBeLessThan(470);
-    expect(ms2).toBeGreaterThan(420);
+    expect(ms2).toBeGreaterThan(430);
   });
 
   it("Should not retry 3xx/400/401/403/422 errors", async function () {
@@ -266,12 +274,104 @@ describe("Automatic Retries", function () {
     expect(caught).toEqual(testStatuses.length);
   });
 
+  it("Should allow to override the strategy with exponential", async function () {
+    const octokit = new TestOctokit({
+      retry: {
+        strategy: "exponential",
+        retryAfterBaseValue: 50,
+      },
+    });
+
+    const res = await octokit.request("GET /route", {
+      request: {
+        responses: [
+          { status: 500, headers: {}, data: { message: "Did not retry, one" } },
+          { status: 500, headers: {}, data: { message: "Did not retry, two" } },
+          {
+            status: 500,
+            headers: {},
+            data: { message: "Did not retry, three" },
+          },
+          { status: 200, headers: {}, data: { message: "Success!" } },
+        ],
+      },
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toStrictEqual({ message: "Success!" });
+    expect(octokit.__requestLog).toStrictEqual([
+      "START GET /route",
+      "START GET /route",
+      "START GET /route",
+      "START GET /route",
+      "END GET /route",
+    ]);
+
+    const ms0 = octokit.__requestTimings[1] - octokit.__requestTimings[0];
+    expect(ms0).toBeLessThan(120);
+    expect(ms0).toBeGreaterThan(80);
+
+    const ms1 = octokit.__requestTimings[2] - octokit.__requestTimings[1];
+    expect(ms1).toBeLessThan(220);
+    expect(ms1).toBeGreaterThan(180);
+
+    const ms2 = octokit.__requestTimings[3] - octokit.__requestTimings[2];
+    expect(ms2).toBeLessThan(420);
+    expect(ms2).toBeGreaterThan(380);
+  });
+
+  it("Should allow to override the strategy with linear", async function () {
+    const octokit = new TestOctokit({
+      retry: {
+        strategy: "linear",
+        retryAfterBaseValue: 50,
+      },
+    });
+
+    const res = await octokit.request("GET /route", {
+      request: {
+        responses: [
+          { status: 500, headers: {}, data: { message: "Did not retry, one" } },
+          { status: 500, headers: {}, data: { message: "Did not retry, two" } },
+          {
+            status: 500,
+            headers: {},
+            data: { message: "Did not retry, three" },
+          },
+          { status: 200, headers: {}, data: { message: "Success!" } },
+        ],
+      },
+    });
+
+    expect(res.status).toEqual(200);
+    expect(res.data).toStrictEqual({ message: "Success!" });
+    expect(octokit.__requestLog).toStrictEqual([
+      "START GET /route",
+      "START GET /route",
+      "START GET /route",
+      "START GET /route",
+      "END GET /route",
+    ]);
+
+    const ms0 = octokit.__requestTimings[1] - octokit.__requestTimings[0];
+    expect(ms0).toBeLessThan(70);
+    expect(ms0).toBeGreaterThan(30);
+
+    const ms1 = octokit.__requestTimings[2] - octokit.__requestTimings[1];
+    expect(ms1).toBeLessThan(120);
+    expect(ms1).toBeGreaterThan(80);
+
+    const ms2 = octokit.__requestTimings[3] - octokit.__requestTimings[2];
+    expect(ms2).toBeLessThan(170);
+    expect(ms2).toBeGreaterThan(130);
+  });
+
   it('Should retry "Something went wrong" GraphQL error', async function () {
     const octokit = new TestOctokit();
 
     const result = await octokit.graphql({
-      query: `query { 
-          viewer { 
+      query: `query {
+          viewer {
             login
           }
         }`,
@@ -347,8 +447,8 @@ describe("Automatic Retries", function () {
 
     try {
       await octokit.graphql({
-        query: `query { 
-          viewer { 
+        query: `query {
+          viewer {
             login
           }
         }`,

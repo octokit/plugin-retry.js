@@ -6,6 +6,12 @@ import { wrapRequest } from "./wrap-request";
 
 export const VERSION = "0.0.0-development";
 
+export enum RetryStrategy {
+  exponential = "exponential",
+  linear = "linear",
+  polynomial = "polynomial",
+}
+
 export function retry(octokit: Octokit, octokitOptions: any) {
   const state = Object.assign(
     {
@@ -13,9 +19,14 @@ export function retry(octokit: Octokit, octokitOptions: any) {
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
       retries: 3,
+      strategy: RetryStrategy.polynomial,
     },
     octokitOptions.retry
   );
+
+  if (!RetryStrategy.hasOwnProperty(state.strategy)) {
+    throw new Error(`Invalid retry strategy: ${state.strategy}`);
+  }
 
   if (state.enabled) {
     octokit.hook.error("request", errorRequest.bind(null, state, octokit));
