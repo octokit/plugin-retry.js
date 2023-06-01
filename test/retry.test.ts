@@ -228,7 +228,7 @@ describe("Automatic Retries", function () {
 
     expect(caught).toEqual(testStatuses.length);
     expect(octokit.__requestLog).toStrictEqual(
-      testStatuses.map((_) => "START GET /route")
+      testStatuses.map(() => "START GET /route")
     );
   });
 
