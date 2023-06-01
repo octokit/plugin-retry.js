@@ -228,7 +228,7 @@ describe("Automatic Retries", function () {
 
     expect(caught).toEqual(testStatuses.length);
     expect(octokit.__requestLog).toStrictEqual(
-      testStatuses.map((x) => "START GET /route")
+      testStatuses.map((_) => "START GET /route")
     );
   });
 
@@ -270,8 +270,8 @@ describe("Automatic Retries", function () {
     const octokit = new TestOctokit();
 
     const result = await octokit.graphql({
-      query: `query { 
-          viewer { 
+      query: `query {
+          viewer {
             login
           }
         }`,
@@ -347,8 +347,8 @@ describe("Automatic Retries", function () {
 
     try {
       await octokit.graphql({
-        query: `query { 
-          viewer { 
+        query: `query {
+          viewer {
             login
           }
         }`,
