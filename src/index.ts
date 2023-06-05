@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/core";
-import { RequestError } from "@octokit/request-error";
+import type { RequestError } from "@octokit/request-error";
 
 import { errorRequest } from "./error-request";
 import { wrapRequest } from "./wrap-request";
