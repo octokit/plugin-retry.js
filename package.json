@@ -16,7 +16,7 @@
   "author": "Simon Grondin (http://github.com/SGrondin)",
   "license": "MIT",
   "dependencies": {
-    "@octokit/types": "^9.0.0",
+    "@octokit/types": "^10.0.0",
     "@octokit/request-error": "^4.0.1",
     "bottleneck": "^2.15.3"
   },
