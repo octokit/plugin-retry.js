@@ -11,7 +11,7 @@ export function retry(octokit: Octokit, octokitOptions: any) {
     {
       enabled: true,
       retryAfterBaseValue: 1000,
-      doNotRetry: [400, 401, 403, 404, 422],
+      doNotRetry: [400, 401, 403, 404, 422, 451],
       retries: 3,
     },
     octokitOptions.retry
