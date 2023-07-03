@@ -205,10 +205,10 @@ describe("Automatic Retries", function () {
     expect(ms2).toBeGreaterThan(420);
   });
 
-  it("Should not retry 3xx/400/401/403/422 errors", async function () {
+  it("Should not retry 3xx/400/401/403/422/451 errors", async function () {
     const octokit = new TestOctokit({ retry: { retryAfterBaseValue: 50 } });
     let caught = 0;
-    const testStatuses = [304, 400, 401, 403, 404, 422];
+    const testStatuses = [304, 400, 401, 403, 404, 422, 451];
 
     for (const status of testStatuses) {
       try {
@@ -241,7 +241,7 @@ describe("Automatic Retries", function () {
       },
     });
     let caught = 0;
-    const testStatuses = [304, 400, 401, 403, 404];
+    const testStatuses = [304, 400, 401, 403, 404, 422, 451];
 
     for (const status of testStatuses) {
       try {
