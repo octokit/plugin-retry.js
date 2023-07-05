@@ -48,7 +48,7 @@ describe("Automatic Retries", function () {
     ]);
 
     expect(
-      octokit.__requestTimings[1] - octokit.__requestTimings[0]
+      octokit.__requestTimings[1] - octokit.__requestTimings[0],
     ).toBeLessThan(20);
   });
 
@@ -77,10 +77,10 @@ describe("Automatic Retries", function () {
       "START GET /route",
     ]);
     expect(
-      octokit.__requestTimings[1] - octokit.__requestTimings[0]
+      octokit.__requestTimings[1] - octokit.__requestTimings[0],
     ).toBeLessThan(20);
     expect(
-      octokit.__requestTimings[2] - octokit.__requestTimings[1]
+      octokit.__requestTimings[2] - octokit.__requestTimings[1],
     ).toBeLessThan(20);
   });
 
@@ -134,7 +134,7 @@ describe("Automatic Retries", function () {
 
     // null (0) retryAfter
     expect(
-      octokit.__requestTimings[3] - octokit.__requestTimings[2]
+      octokit.__requestTimings[3] - octokit.__requestTimings[2],
     ).toBeLessThan(20);
   });
 
@@ -228,7 +228,7 @@ describe("Automatic Retries", function () {
 
     expect(caught).toEqual(testStatuses.length);
     expect(octokit.__requestLog).toStrictEqual(
-      testStatuses.map(() => "START GET /route")
+      testStatuses.map(() => "START GET /route"),
     );
   });
 
@@ -319,7 +319,7 @@ describe("Automatic Retries", function () {
     ]);
 
     expect(
-      octokit.__requestTimings[1] - octokit.__requestTimings[0]
+      octokit.__requestTimings[1] - octokit.__requestTimings[0],
     ).toBeLessThan(20);
   });
 
@@ -385,7 +385,7 @@ describe("Automatic Retries", function () {
     } catch (error: any) {
       expect(error.name).toEqual("GraphqlResponseError");
       expect(error.message).toContain(
-        "Something that cannot be fixed with a request retry"
+        "Something that cannot be fixed with a request retry",
       );
     }
 
@@ -395,7 +395,7 @@ describe("Automatic Retries", function () {
     ]);
 
     expect(
-      octokit.__requestTimings[1] - octokit.__requestTimings[0]
+      octokit.__requestTimings[1] - octokit.__requestTimings[0],
     ).toBeLessThan(20);
   });
 });
@@ -421,7 +421,7 @@ describe("errorRequest", function () {
     const error = new RequestError(
       "Internal server error",
       500,
-      errorOptions
+      errorOptions,
     ) as any;
     delete error.request;
 

@@ -14,7 +14,7 @@ export function retry(octokit: Octokit, octokitOptions: any) {
       doNotRetry: [400, 401, 403, 404, 422, 451],
       retries: 3,
     },
-    octokitOptions.retry
+    octokitOptions.retry,
   );
 
   if (state.enabled) {
@@ -27,7 +27,7 @@ export function retry(octokit: Octokit, octokitOptions: any) {
       retryRequest: (
         error: RequestError,
         retries: number,
-        retryAfter: number
+        retryAfter: number,
       ) => {
         error.request.request = Object.assign({}, error.request.request, {
           retries: retries,
