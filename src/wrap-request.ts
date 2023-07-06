@@ -20,7 +20,7 @@ export async function wrapRequest(state, octokit, request, options) {
 
   return limiter.schedule(
     requestWithGraphqlErrorHandling.bind(null, state, octokit, request),
-    options
+    options,
   );
 }
 
@@ -28,7 +28,7 @@ async function requestWithGraphqlErrorHandling(
   state,
   octokit,
   request,
-  options
+  options,
 ) {
   const response = await request(request, options);
 
@@ -36,7 +36,7 @@ async function requestWithGraphqlErrorHandling(
     response.data &&
     response.data.errors &&
     /Something went wrong while executing your query/.test(
-      response.data.errors[0].message
+      response.data.errors[0].message,
     )
   ) {
     // simulate 500 request error for retry handling
