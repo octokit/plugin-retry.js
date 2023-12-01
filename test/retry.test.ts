@@ -1,7 +1,7 @@
-import { TestOctokit } from "./octokit";
-import { errorRequest } from "../src/error-request";
+import { TestOctokit } from "./octokit.ts";
+import { errorRequest } from "../src/error-request.ts";
 import { RequestError } from "@octokit/request-error";
-import { RequestMethod } from "@octokit/types";
+import type { RequestMethod } from "@octokit/types";
 
 describe("Automatic Retries", function () {
   it("Should be possible to disable the plugin", async function () {
