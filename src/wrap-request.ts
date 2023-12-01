@@ -1,10 +1,24 @@
-// @ts-nocheck
+// @ts-expect-error
 import Bottleneck from "bottleneck/light";
+import type TBottleneck from "bottleneck";
 import { RequestError } from "@octokit/request-error";
 import { errorRequest } from "./error-request";
+import type { Octokit, State } from "./types";
+import type { EndpointDefaults, OctokitResponse } from "@octokit/types";
 
-export async function wrapRequest(state, octokit, request, options) {
-  const limiter = new Bottleneck();
+type Request = (
+    request: Request,
+    options: Required<EndpointDefaults>,
+  ) => Promise<OctokitResponse<any>>;
+export async function wrapRequest(
+  state: State,
+  octokit: Octokit,
+  request: (
+    options: Required<EndpointDefaults>,
+  ) => Promise<OctokitResponse<any>>,
+  options: Required<EndpointDefaults>,
+) {
+  const limiter: TBottleneck = new Bottleneck();
 
   limiter.on("failed", function (error, info) {
     const maxRetries = ~~error.request.request.retries;
@@ -19,16 +33,20 @@ export async function wrapRequest(state, octokit, request, options) {
   });
 
   return limiter.schedule(
+    // @ts-expect-error
     requestWithGraphqlErrorHandling.bind(null, state, octokit, request),
     options,
   );
 }
 
 async function requestWithGraphqlErrorHandling(
-  state,
-  octokit,
-  request,
-  options,
+  state: State,
+  octokit: Octokit,
+  request: (
+    request: Request,
+    options: Required<EndpointDefaults>,
+  ) => Promise<OctokitResponse<any>>,
+  options: Required<EndpointDefaults>,
 ) {
   const response = await request(request, options);
 
