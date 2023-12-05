@@ -1,7 +1,7 @@
 // @ts-nocheck
 import Bottleneck from "bottleneck/light";
 import { RequestError } from "@octokit/request-error";
-import { errorRequest } from "./error-request";
+import { errorRequest } from "./error-request.js";
 
 export async function wrapRequest(state, octokit, request, options) {
   const limiter = new Bottleneck();

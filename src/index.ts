@@ -1,8 +1,8 @@
 import { Octokit } from "@octokit/core";
 import type { RequestError } from "@octokit/request-error";
 
-import { errorRequest } from "./error-request";
-import { wrapRequest } from "./wrap-request";
+import { errorRequest } from "./error-request.js";
+import { wrapRequest } from "./wrap-request.js";
 
 export const VERSION = "0.0.0-development";
 

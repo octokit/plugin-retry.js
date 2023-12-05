@@ -1,4 +1,4 @@
-import { retry } from "../src";
+import { retry } from "../src/index.ts";
 
 describe("Smoke test", () => {
   it("is a function", () => {
