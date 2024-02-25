@@ -30,8 +30,8 @@ Node
 Install with `npm install @octokit/core @octokit/plugin-retry`. Optionally replace `@octokit/core` with a core-compatible module
 
 ```js
-const { Octokit } = require("@octokit/core");
-const { retry } = require("@octokit/plugin-retry");
+import { Octokit } from "@octokit/core";
+import { retry } from "@octokit/plugin-retry";
 ```
 
 </td></tr>
