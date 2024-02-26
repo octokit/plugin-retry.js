@@ -1,5 +1,5 @@
 // @ts-nocheck
-import Bottleneck from "bottleneck/light";
+import Bottleneck from "bottleneck/light.js";
 import { RequestError } from "@octokit/request-error";
 import { errorRequest } from "./error-request.js";
 
