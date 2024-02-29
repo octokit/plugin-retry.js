@@ -21,7 +21,7 @@
     "bottleneck": "^2.15.3"
   },
   "peerDependencies": {
-    "@octokit/core": ">=5"
+    "@octokit/core": "5"
   },
   "devDependencies": {
     "@octokit/core": "^5.0.0",
