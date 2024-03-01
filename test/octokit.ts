@@ -20,7 +20,6 @@ function testPlugin(octokit: Octokit) {
           ? res.data.message
           : `Test failed request (${res.status})`;
       const error = new RequestError(message, res.status, {
-        headers: res.headers,
         request: options,
       });
       throw error;
