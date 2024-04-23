@@ -60,12 +60,14 @@ async function main() {
       {
         ...pkg,
         files: ["dist-*/**", "bin/**"],
-        main: "./dist-bundle/index.js",
         types: "./dist-types/index.d.ts",
         exports: {
           ".": {
             types: "./dist-types/index.d.ts",
             import: "./dist-bundle/index.js",
+            // Tooling currently are having issues with the "exports" field when there is no "default", ex: TypeScript, eslint, ncc, jest
+            // See https://github.com/octokit/core.js/issues/667#issuecomment-2037592361
+            // See https://github.com/octokit/plugin-retry.js/issues/541
             default: "./dist-bundle/index.js",
           },
         },
