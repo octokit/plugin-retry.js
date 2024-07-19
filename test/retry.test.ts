@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { TestOctokit } from "./octokit.ts";
 import { errorRequest } from "../src/error-request.ts";
 import { RequestError } from "@octokit/request-error";

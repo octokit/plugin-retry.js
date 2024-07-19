@@ -1,10 +1,10 @@
-import { Octokit } from "@octokit/core";
+import type { Octokit } from "@octokit/core";
 import type { RequestError } from "@octokit/request-error";
 
+import { VERSION } from "./version.js";
 import { errorRequest } from "./error-request.js";
 import { wrapRequest } from "./wrap-request.js";
-
-export const VERSION = "0.0.0-development";
+export { VERSION } from "./version.js";
 
 export function retry(octokit: Octokit, octokitOptions: any) {
   const state = Object.assign(
