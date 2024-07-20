@@ -38,32 +38,6 @@
     "typescript": "^5.0.0",
     "vitest": "^2.0.0"
   },
-  "jest": {
-    "preset": "ts-jest",
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": [
-        "ts-jest",
-        {
-          "tsconfig": "test/tsconfig.test.json",
-          "useESM": true
-        }
-      ]
-    },
-    "coverageThreshold": {
-      "global": {
-        "statements": 100,
-        "branches": 100,
-        "functions": 100,
-        "lines": 100
-      }
-    },
-    "moduleNameMapper": {
-      "^(.+)\\.jsx?$": "$1"
-    }
-  },
   "release": {
     "branches": [
       "+([0-9]).x",
@@ -88,8 +62,6 @@
         "semantic-release-plugin-update-version-in-files",
         {
           "files": [
-            "pkg/dist-web/*",
-            "pkg/dist-node/*",
             "pkg/*/version.*"
           ]
         }
