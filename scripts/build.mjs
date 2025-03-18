@@ -8,6 +8,9 @@ const sharedOptions = {
   minify: false,
   allowOverwrite: true,
   packages: "external",
+  platform: "neutral",
+  target: "es2022",
+  format: "esm",
 };
 
 async function main() {
@@ -18,8 +21,6 @@ async function main() {
     entryPoints: await glob(["./src/*.ts", "./src/**/*.ts"]),
     outdir: "pkg/dist-src",
     bundle: false,
-    platform: "neutral",
-    format: "esm",
     ...sharedOptions,
     sourcemap: false,
   });
@@ -35,27 +36,12 @@ async function main() {
 
   const entryPoints = ["./pkg/dist-src/index.js"];
 
-  await Promise.all([
-    // Build the a CJS Node.js bundle
-    esbuild.build({
-      entryPoints,
-      outdir: "pkg/dist-node",
-      bundle: true,
-      platform: "node",
-      target: "node18",
-      format: "cjs",
-      ...sharedOptions,
-    }),
-    // Build an ESM browser bundle
-    esbuild.build({
-      entryPoints,
-      outdir: "pkg/dist-web",
-      bundle: true,
-      platform: "browser",
-      format: "esm",
-      ...sharedOptions,
-    }),
-  ]);
+  await esbuild.build({
+    entryPoints,
+    outdir: "pkg/dist-bundle",
+    bundle: true,
+    ...sharedOptions,
+  });
 
   // Copy the README, LICENSE to the pkg folder
   await copyFile("LICENSE", "pkg/LICENSE");
@@ -67,17 +53,23 @@ async function main() {
   delete pkg.scripts;
   delete pkg.prettier;
   delete pkg.release;
-  delete pkg.jest;
   await writeFile(
     "pkg/package.json",
     JSON.stringify(
       {
         ...pkg,
         files: ["dist-*/**", "bin/**"],
-        main: "dist-node/index.js",
-        browser: "dist-web/index.js",
-        types: "dist-types/index.d.ts",
-        module: "dist-src/index.js",
+        types: "./dist-types/index.d.ts",
+        exports: {
+          ".": {
+            types: "./dist-types/index.d.ts",
+            import: "./dist-bundle/index.js",
+            // Tooling currently are having issues with the "exports" field when there is no "default", ex: TypeScript, eslint, ncc, jest
+            // See https://github.com/octokit/core.js/issues/667#issuecomment-2037592361
+            // See https://github.com/octokit/plugin-retry.js/issues/541
+            default: "./dist-bundle/index.js",
+          },
+        },
         sideEffects: false,
       },
       null,

@@ -1,9 +1,9 @@
 // @ts-expect-error
-import Bottleneck from "bottleneck/light";
+import Bottleneck from "bottleneck/light.js";
 import type TBottleneck from "bottleneck";
 import { RequestError } from "@octokit/request-error";
-import { errorRequest } from "./error-request";
-import type { Octokit, State } from "./types";
+import { errorRequest } from "./error-request.js";
+import type { Octokit, State } from "./types.js";
 import type { EndpointDefaults, OctokitResponse } from "@octokit/types";
 
 type Request = (
@@ -53,6 +53,7 @@ async function requestWithGraphqlErrorHandling(
   if (
     response.data &&
     response.data.errors &&
+    response.data.errors.length > 0 &&
     /Something went wrong while executing your query/.test(
       response.data.errors[0].message,
     )

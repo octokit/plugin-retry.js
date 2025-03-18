@@ -2,60 +2,41 @@
   "name": "@octokit/plugin-retry",
   "version": "0.0.0-development",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
+  "type": "module",
   "description": "Automatic retry plugin for octokit",
   "scripts": {
     "build": "node scripts/build.mjs && tsc -p tsconfig.json",
     "lint": "prettier --check '{src,test}/**/*' README.md package.json",
     "lint:fix": "prettier --write '{src,test}/**/*' README.md package.json",
     "pretest": "npm run -s lint",
-    "test": "jest --coverage"
+    "test": "vitest run --coverage"
   },
   "repository": "github:octokit/plugin-retry.js",
   "author": "Simon Grondin (http://github.com/SGrondin)",
   "license": "MIT",
   "dependencies": {
-    "@octokit/types": "^12.0.0",
-    "@octokit/request-error": "^5.0.0",
+    "@octokit/request-error": "^6.1.7",
+    "@octokit/types": "^13.6.2",
     "bottleneck": "^2.15.3"
   },
   "peerDependencies": {
-    "@octokit/core": ">=5"
+    "@octokit/core": ">=6"
   },
   "devDependencies": {
-    "@octokit/core": "^5.0.0",
-    "@octokit/tsconfig": "^2.0.0",
-    "@types/fetch-mock": "^7.3.1",
-    "@types/jest": "^29.0.0",
-    "@types/node": "^20.0.0",
-    "esbuild": "^0.19.0",
-    "fetch-mock": "^9.0.0",
-    "glob": "^10.2.6",
-    "jest": "^29.0.0",
-    "prettier": "3.1.0",
-    "semantic-release-plugin-update-version-in-files": "^1.0.0",
-    "ts-jest": "^29.0.0",
-    "typescript": "^5.0.0"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "transform": {
-      "^.+\\.(ts|tsx)$": [
-        "ts-jest",
-        {
-          "tsconfig": "test/tsconfig.test.json"
-        }
-      ]
-    },
-    "coverageThreshold": {
-      "global": {
-        "statements": 100,
-        "branches": 100,
-        "functions": 100,
-        "lines": 100
-      }
-    }
+    "@octokit/core": "^6.1.4",
+    "@octokit/tsconfig": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "esbuild": "^0.25.0",
+    "fetch-mock": "^12.0.0",
+    "glob": "^11.0.0",
+    "prettier": "3.5.3",
+    "semantic-release-plugin-update-version-in-files": "^2.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0"
   },
   "release": {
     "branches": [
@@ -81,8 +62,6 @@
         "semantic-release-plugin-update-version-in-files",
         {
           "files": [
-            "pkg/dist-web/*",
-            "pkg/dist-node/*",
             "pkg/*/version.*"
           ]
         }

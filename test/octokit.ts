@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/core";
 import { RequestError } from "@octokit/request-error";
-import { retry } from "../src";
+import { retry } from "../src/index.ts";
 
 function testPlugin(octokit: Octokit) {
   const t0 = Date.now();
@@ -20,7 +20,6 @@ function testPlugin(octokit: Octokit) {
           ? res.data.message
           : `Test failed request (${res.status})`;
       const error = new RequestError(message, res.status, {
-        headers: res.headers,
         request: options,
       });
       throw error;

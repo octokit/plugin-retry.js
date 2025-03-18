@@ -1,22 +1,19 @@
-import type { Octokit as OctokitCore } from "@octokit/core";
+import type { Octokit } from "@octokit/core";
 import type { RequestError } from "@octokit/request-error";
-import type { OctokitOptions } from "@octokit/core/dist-types/types.d";
-import { errorRequest } from "./error-request";
-import { wrapRequest } from "./wrap-request";
-import type { RetryOptions, State } from "./types";
-import type { WrapHook } from "before-after-hook";
-
-import { VERSION } from "./version.js";
+import type { OctokitOptions } from "@octokit/core/types";
 import type { EndpointDefaults, OctokitResponse } from "@octokit/types";
 
-export { VERSION };
+import { VERSION } from "./version.js";
+import { errorRequest } from "./error-request.js";
+import { wrapRequest } from "./wrap-request.js";
+export { VERSION } from "./version.js";
 
 export function retry(octokit: OctokitCore, octokitOptions: OctokitOptions) {
   const state: State = Object.assign(
     {
       enabled: true,
       retryAfterBaseValue: 1000,
-      doNotRetry: [400, 401, 403, 404, 422, 451],
+      doNotRetry: [400, 401, 403, 404, 410, 422, 451],
       retries: 3,
     },
     octokitOptions.retry,
