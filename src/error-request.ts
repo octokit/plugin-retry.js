@@ -1,5 +1,5 @@
 import type { RequestError } from "@octokit/request-error";
-import type { State, Octokit } from "./types";
+import type { State, Octokit } from "./types.js";
 import type { EndpointDefaults } from "@octokit/types";
 
 export async function errorRequest(

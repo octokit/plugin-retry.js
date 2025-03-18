@@ -1,4 +1,4 @@
-import { Octokit as OctokitCore } from "@octokit/core";
+import type { Octokit as OctokitCore } from "@octokit/core";
 import type { RequestError } from "@octokit/request-error";
 
 export type RetryOptions = {

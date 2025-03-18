@@ -1,11 +1,11 @@
-import type { Octokit } from "@octokit/core";
+import type { Octokit as OctokitCore } from "@octokit/core";
 import type { RequestError } from "@octokit/request-error";
 import type { OctokitOptions } from "@octokit/core/types";
-import type { EndpointDefaults, OctokitResponse } from "@octokit/types";
 
 import { VERSION } from "./version.js";
 import { errorRequest } from "./error-request.js";
 import { wrapRequest } from "./wrap-request.js";
+import type { RetryOptions, State } from "./types.js";
 export { VERSION } from "./version.js";
 
 export function retry(octokit: OctokitCore, octokitOptions: OctokitOptions) {
@@ -49,7 +49,7 @@ export function retry(octokit: OctokitCore, octokitOptions: OctokitOptions) {
 }
 retry.VERSION = VERSION;
 
-declare module "@octokit/core/dist-types/types.d" {
+declare module "@octokit/core/types" {
   interface OctokitOptions {
     retry?: RetryOptions;
   }

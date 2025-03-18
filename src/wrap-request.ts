@@ -7,9 +7,9 @@ import type { Octokit, State } from "./types.js";
 import type { EndpointDefaults, OctokitResponse } from "@octokit/types";
 
 type Request = (
-    request: Request,
-    options: Required<EndpointDefaults>,
-  ) => Promise<OctokitResponse<any>>;
+  request: Request,
+  options: Required<EndpointDefaults>,
+) => Promise<OctokitResponse<any>>;
 export async function wrapRequest(
   state: State,
   octokit: Octokit,
