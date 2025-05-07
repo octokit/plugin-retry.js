@@ -1,13 +1,15 @@
-import type { Octokit } from "@octokit/core";
+import type { Octokit as OctokitCore } from "@octokit/core";
 import type { RequestError } from "@octokit/request-error";
+import type { OctokitOptions } from "@octokit/core/types";
 
 import { VERSION } from "./version.js";
 import { errorRequest } from "./error-request.js";
 import { wrapRequest } from "./wrap-request.js";
+import type { RetryOptions, State } from "./types.js";
 export { VERSION } from "./version.js";
 
-export function retry(octokit: Octokit, octokitOptions: any) {
-  const state = Object.assign(
+export function retry(octokit: OctokitCore, octokitOptions: OctokitOptions) {
+  const state: State = Object.assign(
     {
       enabled: true,
       retryAfterBaseValue: 1000,
@@ -18,7 +20,13 @@ export function retry(octokit: Octokit, octokitOptions: any) {
   );
 
   if (state.enabled) {
+    // @ts-expect-error
     octokit.hook.error("request", errorRequest.bind(null, state, octokit));
+    // The types for `before-after-hook` do not let us only pass through a Promise return value
+    // the types expect that the function can return either a Promise of the response, or diectly return the response.
+    // This is due to the fact that `@octokit/request` uses aysnc functions
+    // Also, since we add the custom `retryCount` property to the request argument, the types are not compatible.
+    // @ts-expect-error
     octokit.hook.wrap("request", wrapRequest.bind(null, state, octokit));
   }
 
@@ -40,3 +48,9 @@ export function retry(octokit: Octokit, octokitOptions: any) {
   };
 }
 retry.VERSION = VERSION;
+
+declare module "@octokit/core/types" {
+  interface OctokitOptions {
+    retry?: RetryOptions;
+  }
+}
