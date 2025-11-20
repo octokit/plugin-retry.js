@@ -10,7 +10,19 @@ export async function errorRequest(state, octokit, error, options) {
   if (error.status >= 400 && !state.doNotRetry.includes(error.status)) {
     const retries =
       options.request.retries != null ? options.request.retries : state.retries;
-    const retryAfter = Math.pow((options.request.retryCount || 0) + 1, 2);
+    const retryCount = (options.request.retryCount || 0) + 1;
+    let retryAfter;
+    switch (state.strategy) {
+      case "exponential":
+        retryAfter = Math.round(Math.pow(2, retryCount));
+        break;
+      case "linear":
+        retryAfter = retryCount;
+        break;
+      default: // "polynomial"
+        retryAfter = Math.round(Math.pow(retryCount, 2));
+        break;
+    }
     throw octokit.retry.retryRequest(error, retries, retryAfter);
   }
 

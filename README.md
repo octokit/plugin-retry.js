@@ -82,6 +82,19 @@ const octokit = new MyOctokit({
 });
 ```
 
+To override the retry strategy:
+
+```js
+const octokit = new MyOctokit({
+  auth: "secret123",
+  retry: {
+    // retry strategy, can be one of `exponential`, `linear`, or `polynomial`
+    // defaults to `polynomial`
+    strategy: "polynomial",
+  },
+});
+```
+
 You can manually ask for retries for any request by passing `{ request: { retries: numRetries, retryAfter: delayInSeconds }}`. Note that the `doNotRetry` option from the constructor is ignored in this case, requests will be retried no matter their response code.
 
 ```js
