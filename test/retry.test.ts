@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { TestOctokit } from "./octokit.ts";
-import { errorRequest, isRequestError } from "../src/error-request.ts";
+import {
+  defaultShouldRetry,
+  errorRequest,
+  isRequestError,
+} from "../src/error-request.ts";
 import { RequestError } from "@octokit/request-error";
 import type {
   RequestMethod,
@@ -414,6 +418,7 @@ describe("errorRequest", function () {
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
       retries: 3,
+      shouldRetry: defaultShouldRetry,
     } satisfies RetryState;
     const requestOptions = {
       method: "GET" as RequestMethod,
@@ -448,6 +453,7 @@ describe("errorRequest", function () {
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
       retries: 3,
+      shouldRetry: defaultShouldRetry,
     } satisfies RetryState;
     const requestOptions = {
       method: "GET" as RequestMethod,

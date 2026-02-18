@@ -2,7 +2,7 @@ import type { Octokit, OctokitOptions } from "@octokit/core";
 import type { RequestError } from "@octokit/request-error";
 
 import { VERSION } from "./version.js";
-import { errorRequest } from "./error-request.js";
+import { defaultShouldRetry, errorRequest } from "./error-request.js";
 import { wrapRequest } from "./wrap-request.js";
 import type { RetryOptions, RetryPlugin, RetryState } from "./types.js";
 import type { RequestRequestOptions } from "@octokit/types";
@@ -18,6 +18,7 @@ export function retry(
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 410, 422, 451],
       retries: 3,
+      shouldRetry: defaultShouldRetry,
     } satisfies RetryState,
     octokitOptions.retry,
   );

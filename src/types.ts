@@ -15,6 +15,7 @@ export interface RetryOptions {
   retryAfterBaseValue?: number;
   doNotRetry?: number[];
   retries?: number;
+  shouldRetry?: (state: RetryState, error: RequestError | Error) => boolean;
 }
 
 export type RetryState = Required<RetryOptions>;
