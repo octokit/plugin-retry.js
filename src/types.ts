@@ -17,7 +17,7 @@ export interface RetryOptions {
   retries?: number;
 }
 
-export type RetryState = Required<RetryOptions>
+export type RetryState = Required<RetryOptions>;
 
 export function isRequestError(error: any): error is RequestError {
   return error.request !== undefined;
