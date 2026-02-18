@@ -22,21 +22,7 @@ export function retry(
     octokitOptions.retry,
   );
 
-  if (state.enabled) {
-    // We expect this plugin to be installed when these hooks fire, and so assume that the
-    // `octokit` object will have been mutated to be at least of type `Octokit & RetryPlugin`
-    // when the handlers are called.
-    octokit.hook.error(
-      "request",
-      errorRequest.bind(null, state, octokit as Octokit & RetryPlugin),
-    );
-    octokit.hook.wrap(
-      "request",
-      wrapRequest.bind(null, state, octokit as Octokit & RetryPlugin),
-    );
-  }
-
-  return {
+  const retryPlugin: RetryPlugin = {
     retry: {
       retryRequest: (
         error: RequestError,
@@ -52,5 +38,12 @@ export function retry(
       },
     },
   };
+
+  if (state.enabled) {
+    octokit.hook.error("request", errorRequest.bind(null, state, retryPlugin));
+    octokit.hook.wrap("request", wrapRequest.bind(null, state, retryPlugin));
+  }
+
+  return retryPlugin;
 }
 retry.VERSION = VERSION;

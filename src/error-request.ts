@@ -1,11 +1,10 @@
-import type { Octokit } from "@octokit/core";
 import { isRequestError, type RetryPlugin, type RetryState } from "./types.js";
 import type { RequestRequestOptions } from "@octokit/types";
 import type { RequestError } from "@octokit/request-error";
 
 export async function errorRequest(
   state: RetryState,
-  octokit: Octokit & RetryPlugin,
+  octokit: RetryPlugin,
   error: RequestError | Error,
   options: { request: RequestRequestOptions },
 ): Promise<any> {
