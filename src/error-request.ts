@@ -1,6 +1,10 @@
-import { isRequestError, type RetryPlugin, type RetryState } from "./types.js";
+import { type RetryPlugin, type RetryState } from "./types.js";
 import type { RequestRequestOptions } from "@octokit/types";
 import type { RequestError } from "@octokit/request-error";
+
+export function isRequestError(error: any): error is RequestError {
+  return error.request !== undefined;
+}
 
 export async function errorRequest(
   state: RetryState,

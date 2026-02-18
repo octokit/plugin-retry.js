@@ -18,7 +18,3 @@ export interface RetryOptions {
 }
 
 export type RetryState = Required<RetryOptions>;
-
-export function isRequestError(error: any): error is RequestError {
-  return error.request !== undefined;
-}
