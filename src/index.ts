@@ -8,18 +8,21 @@ import type { RetryOptions, RetryPlugin, RetryState } from "./types.js";
 import type { RequestRequestOptions } from "@octokit/types";
 export { VERSION } from "./version.js";
 
+export const defaultRetryState: RetryState = {
+  enabled: true,
+  retryAfterBaseValue: 1000,
+  doNotRetry: [400, 401, 403, 404, 410, 422, 451],
+  retries: 3,
+  shouldRetry: defaultShouldRetry,
+};
+
 export function retry(
   octokit: Octokit,
   octokitOptions: OctokitOptions,
 ): RetryPlugin {
   const state: RetryState = Object.assign(
-    {
-      enabled: true,
-      retryAfterBaseValue: 1000,
-      doNotRetry: [400, 401, 403, 404, 410, 422, 451],
-      retries: 3,
-      shouldRetry: defaultShouldRetry,
-    } satisfies RetryState,
+    {},
+    defaultRetryState,
     octokitOptions.retry,
   );
 
