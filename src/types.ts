@@ -10,16 +10,14 @@ export interface RetryPlugin {
   };
 }
 
-export interface RetryState {
-  enabled: boolean;
-  retryAfterBaseValue: number;
-  doNotRetry: number[];
-  retries: number;
+export interface RetryOptions {
+  enabled?: boolean;
+  retryAfterBaseValue?: number;
+  doNotRetry?: number[];
+  retries?: number;
 }
 
-export interface RetryOptions {
-  retry: RetryOptions;
-}
+export type RetryState = Required<RetryOptions>
 
 export function isRequestError(error: any): error is RequestError {
   return error.request !== undefined;

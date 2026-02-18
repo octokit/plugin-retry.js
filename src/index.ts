@@ -10,7 +10,7 @@ export { VERSION } from "./version.js";
 
 export function retry(
   octokit: Octokit,
-  octokitOptions: OctokitOptions & Partial<RetryOptions>,
+  octokitOptions: OctokitOptions,
 ): RetryPlugin {
   const state: RetryState = Object.assign(
     {
@@ -47,3 +47,9 @@ export function retry(
   return retryPlugin;
 }
 retry.VERSION = VERSION;
+
+declare module "@octokit/core/types" {
+  interface OctokitOptions {
+    retry?: RetryOptions;
+  }
+}
