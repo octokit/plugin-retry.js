@@ -53,3 +53,5 @@ declare module "@octokit/core/types" {
     retry?: RetryOptions;
   }
 }
+
+export type { RetryPlugin, RetryOptions };
