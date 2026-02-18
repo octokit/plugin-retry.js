@@ -26,6 +26,9 @@ export async function wrapRequest(
       // the request after that number of milliseconds have passed
       return after * state.retryAfterBaseValue;
     }
+
+    // Do not retry.
+    return undefined;
   });
 
   return limiter.schedule(
