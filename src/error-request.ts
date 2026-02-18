@@ -1,7 +1,15 @@
-// @ts-ignore
+import type { Octokit } from "@octokit/core";
+import { isRequestError, type RetryPlugin, type RetryState } from "./types.js";
+import type { RequestRequestOptions } from "@octokit/types";
+import type { RequestError } from "@octokit/request-error";
 
-export async function errorRequest(state, octokit, error, options) {
-  if (!error.request || !error.request.request) {
+export async function errorRequest(
+  state: RetryState,
+  octokit: Octokit & RetryPlugin,
+  error: RequestError | Error,
+  options: { request: RequestRequestOptions },
+): Promise<any> {
+  if (!isRequestError(error) || !error?.request.request) {
     // address https://github.com/octokit/plugin-retry.js/issues/8
     throw error;
   }

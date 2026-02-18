@@ -20,3 +20,7 @@ export interface RetryState {
 export interface RetryOptions {
   retry: RetryOptions;
 }
+
+export function isRequestError(error: any): error is RequestError {
+  return error.request !== undefined;
+}
