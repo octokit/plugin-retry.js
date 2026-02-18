@@ -1,14 +1,24 @@
-// @ts-nocheck
-import Bottleneck from "bottleneck/light.js";
+import Bottleneck, { type RetryableInfo } from "bottleneck/light.js";
 import { RequestError } from "@octokit/request-error";
 import { errorRequest } from "./error-request.js";
+import type { RetryPlugin, RetryState } from "./types.js";
+import type { EndpointDefaults, OctokitResponse } from "@octokit/types";
 
-export async function wrapRequest(state, octokit, request, options) {
+type RequestHook = (
+  options: Required<EndpointDefaults>,
+) => OctokitResponse<any, number> | Promise<OctokitResponse<any, number>>;
+
+export async function wrapRequest(
+  state: RetryState,
+  octokit: RetryPlugin,
+  request: RequestHook,
+  options: Required<EndpointDefaults>,
+) {
   const limiter = new Bottleneck();
 
-  limiter.on("failed", function (error, info) {
-    const maxRetries = ~~error.request.request.retries;
-    const after = ~~error.request.request.retryAfter;
+  limiter.on("failed", function (error: RequestError, info: RetryableInfo) {
+    const maxRetries = ~~error.request.request?.retries;
+    const after = ~~error.request.request?.retryAfter;
     options.request.retryCount = info.retryCount + 1;
 
     if (maxRetries > info.retryCount) {
@@ -25,12 +35,12 @@ export async function wrapRequest(state, octokit, request, options) {
 }
 
 async function requestWithGraphqlErrorHandling(
-  state,
-  octokit,
-  request,
-  options,
-) {
-  const response = await request(request, options);
+  state: RetryState,
+  octokit: RetryPlugin,
+  request: RequestHook,
+  options: Required<EndpointDefaults>,
+): Promise<OctokitResponse<any, number>> {
+  const response = await request(options);
 
   if (
     response.data &&
