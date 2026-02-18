@@ -25,15 +25,6 @@ async function main() {
     sourcemap: false,
   });
 
-  // Remove the types file from the dist-src folder
-  const typeFiles = await glob([
-    "./pkg/dist-src/**/types.js.map",
-    "./pkg/dist-src/**/types.js",
-  ]);
-  for (const typeFile of typeFiles) {
-    await rm(typeFile);
-  }
-
   const entryPoints = ["./pkg/dist-src/index.js"];
 
   await esbuild.build({
