@@ -73,6 +73,22 @@ const octokit = new MyOctokit({
 });
 ```
 
+You can override the default predicate that determines whether to retry a request based on the outcome of the previous attempt. For example, to retry if the response message includes a particular string. Note that the `doNotRetry` option from the constructor is ignored in this case.
+
+```typescript
+const octokit = new MyOctokit({
+  auth: "secret123",
+  retry: {
+    shouldRetry: (retryState: RetryState, error: any) => {
+      if (isRequestError(error)) {
+        return error.message.includes("Intermittent problem");
+      }
+      return false;
+    },
+  },
+});
+```
+
 To override the number of retries:
 
 ```js
