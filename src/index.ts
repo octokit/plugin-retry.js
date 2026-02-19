@@ -58,4 +58,11 @@ declare module "@octokit/core/types" {
   }
 }
 
+declare module "@octokit/types" {
+  interface RequestRequestOptions {
+    retries?: number;
+    retryAfter?: number;
+  }
+}
+
 export type { RetryPlugin, RetryOptions };
