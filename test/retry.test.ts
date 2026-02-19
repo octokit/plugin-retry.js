@@ -7,8 +7,7 @@ import type {
   RequestOptions,
   RequestRequestOptions,
 } from "@octokit/types";
-import { RetryState } from "../src/types.ts";
-import { fail } from "assert";
+import type { RetryState } from "../src/types.ts";
 
 describe("Automatic Retries", function () {
   it("Should be possible to disable the plugin", async function () {
