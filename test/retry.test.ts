@@ -62,6 +62,43 @@ describe("Automatic Retries", function () {
     ).toBeLessThan(20);
   });
 
+  it("Should retry and pass with custom shouldRetry function", async function () {
+    const octokit = new TestOctokit({
+      shouldRetry: (_retryState: RetryState, error: any) => {
+        if (isRequestError(error)) {
+          return error.message.includes("Intermittent problem");
+        }
+        return false;
+      },
+    });
+
+    const response = await octokit.request("GET /route", {
+      request: {
+        responses: [
+          {
+            status: 403,
+            headers: {},
+            data: { message: "Intermittent problem" },
+          },
+          { status: 200, headers: {}, data: { message: "Success!" } },
+        ],
+        retries: 1,
+      },
+    });
+
+    expect(response.status).toEqual(200);
+    expect(response.data).toStrictEqual({ message: "Success!" });
+    expect(octokit.__requestLog).toStrictEqual([
+      "START GET /route",
+      "START GET /route",
+      "END GET /route",
+    ]);
+
+    expect(
+      octokit.__requestTimings[1] - octokit.__requestTimings[0],
+    ).toBeLessThan(20);
+  });
+
   it("Should retry twice and fail", async function () {
     const octokit = new TestOctokit();
 

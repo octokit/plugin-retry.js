@@ -1,10 +1,15 @@
 import type { Octokit, OctokitOptions } from "@octokit/core";
-import type { RequestError } from "@octokit/request-error";
 
 import { VERSION } from "./version.js";
 import { defaultShouldRetry, errorRequest } from "./error-request.js";
 import { wrapRequest } from "./wrap-request.js";
-import type { RetryOptions, RetryPlugin, RetryState } from "./types.js";
+import type {
+  RequestOptionsWithRequest,
+  RetryOptions,
+  RetryPlugin,
+  RetryRequestOptions,
+  RetryState,
+} from "./types.js";
 import type { RequestRequestOptions } from "@octokit/types";
 export { VERSION } from "./version.js";
 
@@ -29,16 +34,17 @@ export function retry(
   const retryPlugin: RetryPlugin = {
     retry: {
       retryRequest: (
-        error: RequestError,
+        request: RequestOptionsWithRequest,
         retries: number,
         retryAfter: number,
       ) => {
-        error.request.request = Object.assign({}, error.request.request, {
+        const newRequest: RequestRequestOptions &
+          Required<RetryRequestOptions> = Object.assign({}, request.request, {
           retries: retries,
           retryAfter: retryAfter,
-        } satisfies RequestRequestOptions);
+        } as Required<RetryRequestOptions>);
 
-        return error;
+        return { ...request, request: newRequest };
       },
     },
   };

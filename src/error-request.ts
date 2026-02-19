@@ -1,6 +1,9 @@
-import { type RetryPlugin, type RetryState } from "./types.js";
-import type { RequestRequestOptions } from "@octokit/types";
-import type { RequestError } from "@octokit/request-error";
+import {
+  type RequestOptionsWithRequest,
+  type RetryPlugin,
+  type RetryState,
+} from "./types.js";
+import { RequestError } from "@octokit/request-error";
 
 export function isRequestError(error: any): error is RequestError {
   return error.request !== undefined;
@@ -22,13 +25,21 @@ export async function errorRequest(
   state: RetryState,
   octokit: RetryPlugin,
   error: RequestError | Error,
-  options: { request: RequestRequestOptions },
+  options: RequestOptionsWithRequest,
 ): Promise<any> {
-  if (isRequestError(error) && state.shouldRetry(state, error)) {
-    const retries =
-      options.request.retries != null ? options.request.retries : state.retries;
-    const retryAfter = Math.pow((options.request.retryCount || 0) + 1, 2);
-    throw octokit.retry.retryRequest(error, retries, retryAfter);
+  if (state.shouldRetry(state, error)) {
+    const retries: number =
+      options.request?.retries != null
+        ? options.request.retries
+        : state.retries;
+    const retryAfter = Math.pow((options.request?.retryCount || 0) + 1, 2);
+    throw new RequestError(
+      error.message,
+      isRequestError(error) ? error.status : 500,
+      {
+        request: octokit.retry.retryRequest(options, retries, retryAfter),
+      },
+    );
   }
 
   // Maybe eventually there will be more cases here
