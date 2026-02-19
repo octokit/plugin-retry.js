@@ -1,8 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { TestOctokit } from "./octokit.ts";
-import { errorRequest } from "../src/error-request.ts";
+import { errorRequest, isRequestError } from "../src/error-request.ts";
 import { RequestError } from "@octokit/request-error";
-import type { RequestMethod } from "@octokit/types";
+import type {
+  RequestMethod,
+  RequestOptions,
+  RequestRequestOptions,
+} from "@octokit/types";
+import { RetryState } from "../src/types.ts";
+import { fail } from "assert";
 
 describe("Automatic Retries", function () {
   it("Should be possible to disable the plugin", async function () {
@@ -409,15 +415,17 @@ describe("errorRequest", function () {
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
       retries: 3,
-    };
-    const errorOptions = {
+    } satisfies RetryState;
+    const requestOptions = {
+      method: "GET" as RequestMethod,
+      url: "/issues",
+      headers: {},
       request: {
-        method: "GET" as RequestMethod,
-        url: "/issues",
-        headers: {},
         retries: 5,
-        request: {},
       },
+    } satisfies RequestOptions;
+    const errorOptions = {
+      request: requestOptions,
     };
     const error = new RequestError(
       "Internal server error",
@@ -427,7 +435,7 @@ describe("errorRequest", function () {
     delete error.request;
 
     try {
-      await errorRequest(state, octokit, error, errorOptions);
+      await errorRequest(state, octokit, error, requestOptions);
       expect(1).not.toBe(1);
     } catch (e: any) {
       expect(e).toBe(error);
@@ -441,24 +449,28 @@ describe("errorRequest", function () {
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
       retries: 3,
-    };
-    const errorOptions = {
+    } satisfies RetryState;
+    const requestOptions = {
+      method: "GET" as RequestMethod,
+      url: "/issues",
+      headers: {},
       request: {
-        method: "GET" as RequestMethod,
-        url: "/issues",
-        headers: {},
         retries: 5,
-        request: {},
       },
+    } satisfies RequestOptions;
+    const errorOptions = {
+      request: requestOptions,
     };
 
     const error = new RequestError("Internal server error", 500, errorOptions);
 
     try {
-      await errorRequest(state, octokit, error, errorOptions);
+      await errorRequest(state, octokit, error, requestOptions);
       expect(1).not.toBe(1);
     } catch (e: any) {
-      expect(e.request.retries).toBe(5);
+      expect(e).satisfies(isRequestError);
+      expect(e.request.request).toBeDefined();
+      expect(e.request.request?.retries).toBe(5);
     }
   });
 });
