@@ -17,8 +17,8 @@ export async function wrapRequest(
   const limiter = new Bottleneck();
 
   limiter.on("failed", function (error: RequestError, info: RetryableInfo) {
-    const maxRetries = ~~error.request.request?.retries;
-    const after = ~~error.request.request?.retryAfter;
+    const maxRetries = error.request.request?.retries || 0;
+    const after = error.request.request?.retryAfter || 0;
     options.request.retryCount = info.retryCount + 1;
 
     if (maxRetries > info.retryCount) {
@@ -26,6 +26,9 @@ export async function wrapRequest(
       // the request after that number of milliseconds have passed
       return after * state.retryAfterBaseValue;
     }
+
+    // Do not retry.
+    return undefined;
   });
 
   return limiter.schedule(
