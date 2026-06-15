@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { TestOctokit } from "./octokit.ts";
-import { errorRequest, isRequestError } from "../src/error-request.ts";
+import {
+  defaultShouldRetry,
+  errorRequest,
+  isRequestError,
+} from "../src/error-request.ts";
 import { RequestError } from "@octokit/request-error";
 import type {
   RequestMethod,
@@ -39,6 +43,43 @@ describe("Automatic Retries", function () {
       request: {
         responses: [
           { status: 403, headers: {}, data: { message: "Did not retry" } },
+          { status: 200, headers: {}, data: { message: "Success!" } },
+        ],
+        retries: 1,
+      },
+    });
+
+    expect(response.status).toEqual(200);
+    expect(response.data).toStrictEqual({ message: "Success!" });
+    expect(octokit.__requestLog).toStrictEqual([
+      "START GET /route",
+      "START GET /route",
+      "END GET /route",
+    ]);
+
+    expect(
+      octokit.__requestTimings[1] - octokit.__requestTimings[0],
+    ).toBeLessThan(20);
+  });
+
+  it("Should retry and pass with custom shouldRetry function", async function () {
+    const octokit = new TestOctokit({
+      shouldRetry: (_retryState: RetryState, error: any) => {
+        if (isRequestError(error)) {
+          return error.message.includes("Intermittent problem");
+        }
+        return false;
+      },
+    });
+
+    const response = await octokit.request("GET /route", {
+      request: {
+        responses: [
+          {
+            status: 403,
+            headers: {},
+            data: { message: "Intermittent problem" },
+          },
           { status: 200, headers: {}, data: { message: "Success!" } },
         ],
         retries: 1,
@@ -414,6 +455,7 @@ describe("errorRequest", function () {
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
       retries: 3,
+      shouldRetry: defaultShouldRetry,
     } satisfies RetryState;
     const requestOptions = {
       method: "GET" as RequestMethod,
@@ -448,6 +490,7 @@ describe("errorRequest", function () {
       retryAfterBaseValue: 1000,
       doNotRetry: [400, 401, 403, 404, 422],
       retries: 3,
+      shouldRetry: defaultShouldRetry,
     } satisfies RetryState;
     const requestOptions = {
       method: "GET" as RequestMethod,
