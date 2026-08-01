@@ -48,7 +48,7 @@ export function retry(
 }
 retry.VERSION = VERSION;
 
-declare module "@octokit/core/types" {
+declare module "@octokit/core" {
   interface OctokitOptions {
     retry?: RetryOptions;
   }
