@@ -1,6 +1,5 @@
-import Bottleneck, { type RetryableInfo } from "bottleneck/light.js";
 import { RequestError } from "@octokit/request-error";
-import { errorRequest } from "./error-request.js";
+import { errorRequest, isRequestError } from "./error-request.js";
 import type { RetryPlugin, RetryState } from "./types.js";
 import type { EndpointDefaults, OctokitResponse } from "@octokit/types";
 
@@ -14,24 +13,36 @@ export async function wrapRequest(
   request: RequestHook,
   options: Required<EndpointDefaults>,
 ) {
-  const limiter = new Bottleneck();
+  let retryCount = 0;
 
-  limiter.on("failed", function (error: RequestError, info: RetryableInfo) {
-    const maxRetries = ~~error.request.request?.retries;
-    const after = ~~error.request.request?.retryAfter;
-    options.request.retryCount = info.retryCount + 1;
+  while (true) {
+    try {
+      return await requestWithGraphqlErrorHandling(
+        state,
+        octokit,
+        request,
+        options,
+      );
+    } catch (error) {
+      if (!isRequestError(error)) {
+        throw error;
+      }
 
-    if (maxRetries > info.retryCount) {
-      // Returning a number instructs the limiter to retry
-      // the request after that number of milliseconds have passed
-      return after * state.retryAfterBaseValue;
+      const maxRetries = ~~error.request.request?.retries;
+      const retryAfter = ~~error.request.request?.retryAfter;
+      options.request.retryCount = retryCount + 1;
+
+      if (maxRetries <= retryCount) {
+        throw error;
+      }
+
+      const retryAfterMs = retryAfter * state.retryAfterBaseValue;
+      if (retryAfterMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, retryAfterMs));
+      }
+      retryCount++;
     }
-  });
-
-  return limiter.schedule(
-    requestWithGraphqlErrorHandling.bind(null, state, octokit, request),
-    options,
-  );
+  }
 }
 
 async function requestWithGraphqlErrorHandling(
