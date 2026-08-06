@@ -32,6 +32,30 @@ describe("Automatic Retries", function () {
     expect(octokit.__requestLog).toStrictEqual(["START GET /route"]);
   });
 
+  it("Should preserve the request call site in error stack traces", async function () {
+    const octokit = new TestOctokit();
+
+    async function requestFromOuterFunction() {
+      return await octokit.request("GET /route", {
+        request: {
+          responses: [
+            { status: 404, headers: {}, data: { message: "Not Found" } },
+          ],
+        },
+      });
+    }
+
+    let requestError: unknown;
+    try {
+      await requestFromOuterFunction();
+    } catch (error) {
+      requestError = error;
+    }
+
+    expect(requestError).toBeInstanceOf(RequestError);
+    expect((requestError as Error).stack).toContain("requestFromOuterFunction");
+  });
+
   it("Should retry once and pass", async function () {
     const octokit = new TestOctokit();
 
