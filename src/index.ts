@@ -1,40 +1,50 @@
 import type { Octokit, OctokitOptions } from "@octokit/core";
-import type { RequestError } from "@octokit/request-error";
 
 import { VERSION } from "./version.js";
-import { errorRequest } from "./error-request.js";
+import { defaultShouldRetry, errorRequest } from "./error-request.js";
 import { wrapRequest } from "./wrap-request.js";
-import type { RetryOptions, RetryPlugin, RetryState } from "./types.js";
+import type {
+  RequestOptionsWithRequest,
+  RetryOptions,
+  RetryPlugin,
+  RetryRequestOptions,
+  RetryState,
+} from "./types.js";
 import type { RequestRequestOptions } from "@octokit/types";
 export { VERSION } from "./version.js";
+
+export const defaultRetryState: RetryState = {
+  enabled: true,
+  retryAfterBaseValue: 1000,
+  doNotRetry: [400, 401, 403, 404, 410, 422, 451],
+  retries: 3,
+  shouldRetry: defaultShouldRetry,
+};
 
 export function retry(
   octokit: Octokit,
   octokitOptions: OctokitOptions,
 ): RetryPlugin {
   const state: RetryState = Object.assign(
-    {
-      enabled: true,
-      retryAfterBaseValue: 1000,
-      doNotRetry: [400, 401, 403, 404, 410, 422, 451],
-      retries: 3,
-    } satisfies RetryState,
+    {},
+    defaultRetryState,
     octokitOptions.retry,
   );
 
   const retryPlugin: RetryPlugin = {
     retry: {
       retryRequest: (
-        error: RequestError,
+        request: RequestOptionsWithRequest,
         retries: number,
         retryAfter: number,
       ) => {
-        error.request.request = Object.assign({}, error.request.request, {
+        const newRequest: RequestRequestOptions &
+          Required<RetryRequestOptions> = Object.assign({}, request.request, {
           retries: retries,
           retryAfter: retryAfter,
-        } satisfies RequestRequestOptions);
+        } as Required<RetryRequestOptions>);
 
-        return error;
+        return { ...request, request: newRequest };
       },
     },
   };
@@ -51,6 +61,13 @@ retry.VERSION = VERSION;
 declare module "@octokit/core/types" {
   interface OctokitOptions {
     retry?: RetryOptions;
+  }
+}
+
+declare module "@octokit/types" {
+  interface RequestRequestOptions {
+    retries?: number;
+    retryAfter?: number;
   }
 }
 
